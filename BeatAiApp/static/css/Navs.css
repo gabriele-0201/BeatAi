@@ -1,0 +1,597 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+* {
+    font-family: 'Lato', sans-serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: #2F2F2F;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+header {
+    background-color: #2F2F2F;
+    margin: auto;
+    position: relative;
+    overflow: hidden;
+    min-height: 8vh;
+}
+
+.navContainer {
+    position: absolute;
+    background-color: #2F2F2F;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin: clamp(5px, 0.5vh, 50px) clamp(20px, 2vw, 50px);
+    width: calc(100% - (clamp(20px, 2vw, 50px) * 2));
+    transition: all 0.5s ease-in-out;
+    height: calc(100% - (clamp(5px, 0.5vh, 50px) * 2));
+}
+
+#navsContainer {
+    position: relative;
+    height: 8vh;
+    min-height: 8vh;
+    background-color: #2F2F2F;
+}
+
+#mainNavActive {
+    top: 0%;
+}
+
+#mainNavInactive {
+    top: 8vh;
+}
+
+nav ul {
+    background-color: #2F2F2F;
+    margin: auto;
+    display: flex;
+    align-items: center;
+}
+
+.navList li {
+    background-color: #2F2F2F;
+    font-weight: 600;
+    font-size: clamp(15px, 1.5vh, 30px);
+    color: #E8E8E8;
+    text-decoration: none;
+    padding: 0px clamp(10px, 2vw, 40px);
+    transition: all 0.3s ease 0s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.navList li:hover {
+    color: #898989;
+    cursor: pointer;
+}
+
+header ul li img {
+    background-color: #2F2F2F;
+    height: clamp(1em, 3vh, 2.5em);
+}
+
+.navList {
+    list-style: none;
+}
+
+.navList p {
+    background-color: #2F2F2F;
+    text-align: center;
+    margin-top: 0.5em;
+}
+
+/*
+Have to work on this
+I have some problem with the alignment inside the button 
+*/
+.ctaContainer {
+    background-color: #2F2F2F;
+    display: inline;
+}
+
+.cta {
+    background-color: #898989;
+    color: #2F2F2F;
+    padding: clamp(0px, 1vh, 9px) clamp(5px, 1.5vw, 25px);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease 0s;
+}
+
+.cta:hover {
+    color: #2F2F2F;
+    background-color: #E8E8E8;
+}
+
+.subNav {
+    top: -8vh;
+}
+
+#subNavActive {
+    top: 0%;
+}
+
+#selected {
+    color: #898989;
+}
+
+.gameDiv {
+    position: relative;
+    width: 100%;
+    height: 92vh;
+    bottom: 0;
+}
+
+canvas {
+    border: 1px solid #898989;
+}
+
+.modifierDiv {
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    background-color: transparent;
+
+    top: 0px;
+    left: 0px;
+
+    height: 0px;
+    width: 0px;
+}
+
+.arrows {
+    background: transparent;
+    border: none;
+}
+
+#arrowUpImg {
+    animation-name: bouceUp;
+    animation-duration: 700ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-play-state: paused;
+}
+
+#arrowUpImg:hover {
+    animation-play-state: running;
+}
+
+#arrowDownImg {
+    animation-name: bouceDown;
+    animation-duration: 700ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-play-state: paused;
+}
+
+#arrowDownImg:hover {
+    animation-play-state: running;
+}
+
+#arrowLeftImg {
+    animation-name: bouceLeft;
+    animation-duration: 700ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-play-state: paused;
+}
+
+#arrowLeftImg:hover {
+    animation-play-state: running;
+}
+
+#arrowRightImg {
+    animation-name: bouceRight;
+    animation-duration: 700ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-play-state: paused;
+}
+
+#arrowRightImg:hover {
+    animation-play-state: running;
+}
+
+@keyframes bouceUp {
+    0% {    transform: translateY(0);   }
+    17% {   transform: translateY(-15px);  }
+    34% {   transform: translateY(0);   }
+    51% {   transform: translateY(-8px);   }
+    68% {   transform: translateY(0);   }
+    85% {   transform: translateY(-3px);   }
+    100% {  transform: translateY(0);   }
+}
+
+@keyframes bouceDown {
+
+    0% {    transform: translateY(0);   }
+    17% {   transform: translateY(15px);  }
+    34% {   transform: translateY(0);   }
+    51% {   transform: translateY(8px);   }
+    68% {   transform: translateY(0);   }
+    85% {   transform: translateY(3px);   }
+    100% {  transform: translateY(0);   }
+
+}
+
+@keyframes bouceLeft {
+
+    0% {    transform: translateX(0);   }
+    17% {   transform: translateX(-15px);  }
+    34% {   transform: translateX(0);   }
+    51% {   transform: translateX(-8px);   }
+    68% {   transform: translateX(0);   }
+    85% {   transform: translateX(-3px);   }
+    100% {  transform: translateX(0);   }
+
+}
+
+@keyframes bouceRight {
+
+    0% {    transform: translateX(0);   }
+    17% {   transform: translateX(15px);  }
+    34% {   transform: translateX(0);   }
+    51% {   transform: translateX(8px);   }
+    68% {   transform: translateX(0);   }
+    85% {   transform: translateX(3px);   }
+    100% {  transform: translateX(0);   }
+
+}
+
+.centralLineModifier {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    background-color: transparent;
+}
+
+.swal2-popup{
+    background-color: #898989 !important;
+}
+
+.swal2-title{
+    background-color: #898989 !important;
+}
+
+.swal2-html-container{
+    background-color: #898989 !important;
+}
+
+.swal2-actions{
+    background-color: #898989 !important;
+}
+
+.iconWarning {
+    border: 0 !important;
+}
+
+.loading {
+    position: absolute;
+    background-color: transparent;
+    transition: visibility 0.0s, opacity 0.5s linear;
+    display: block;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 30vh;
+    width: auto;
+}
+
+#loadingHidden {
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0s, opacity 0.5s linear;
+}
+
+#loadingVisible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.svgWrite {
+    background-color: transparent;
+    width: 100%;
+    height: auto;
+}
+
+.path {
+    fill: none;
+    stroke: #282828;
+    stroke-width: 5;
+
+    stroke-dasharray: 300;
+
+    animation: dash 30s linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 5000;
+    }
+}
+
+#popContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+
+    flex-wrap: nowrap;
+    gap: clamp(10px, 0.5em, 20px);
+}
+
+#popNumber {
+    color: #898989 !important;
+    font-size: clamp(1.5em, 3vh, 2.5em);
+    display: inline;
+}
+
+#popBtnContainer {
+    display: flex;
+    align-items: center;
+
+    flex-wrap: nowrap;
+    gap: clamp(5px, 0.3em, 10px);
+}
+
+.popBtn {
+    height: clamp(1em, 3vh, 2.5em);
+    /*padding-left: 0.5em;*/
+}
+
+.popPath {
+    stroke: #898989;
+    stroke-width: 30;
+}
+
+.popPathAnimation {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: totalDash 1.5s linear forwards;
+}
+
+.toggle {
+    height: clamp(1em, 3vh, 2.5em);
+}
+
+.toogleYesNo {
+    stroke: #898989;
+    stroke-width: 30;
+    visibility: hidden;
+}
+
+.toggleVisible {
+    visibility: visible;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: totalDash 0.5s linear forwards;
+}
+
+@keyframes totalDash {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.toggleHidden {
+    visibility: hidden;
+}
+
+.win {
+    position: absolute;
+    background-color: transparent;
+    display: block;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 30vh;
+    width: auto;
+}
+
+#winHidden {
+    transition: visibility 0.7s linear;
+    visibility: hidden;
+}
+
+#winHiddenInitial {
+    visibility: hidden;
+}
+
+#winVisible {
+    visibility: visible;
+}
+
+.animationWinTitle {
+    fill: none;
+    stroke: #141313;
+    stroke-width: 5;
+
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: totalDash 1s linear forwards;
+}
+
+.animationWinSubTitle {
+    fill: none;
+    stroke: #141313;
+    stroke-width: 3;
+
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: totalDash 2s linear forwards;
+}
+
+.animationRemoveWinTitle {
+    fill: none;
+    stroke: #141313;
+    stroke-width: 5;
+
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 0;
+    animation: removeDash 0.7s linear forwards;
+}
+
+.animationRemoveWinSubTitle {
+    fill: none;
+    stroke: #141313;
+    stroke-width: 3;
+
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 0;
+    animation: removeDash 0.7s linear forwards;
+}
+
+@keyframes removeDash {
+    to {
+        stroke-dashoffset: 2000;
+    }
+}
+
+
+.headerCounter {
+    font-size: clamp(1.5em, 3vh, 2.5em);
+    margin: 0 !important;
+}
+
+.smallAndTurnDisp {
+    position: absolute;
+    background-color: transparent;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: auto;
+    display: none;
+}
+
+
+#animationSmallTitle {
+    fill: none;
+    stroke: #141313;
+    stroke-width: 3;
+
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: totalDash 3s linear forwards;
+}
+
+
+#turnAnimation {
+    fill: none;
+    stroke: #141313;
+    stroke-width: 5;
+
+    stroke-dasharray: 3000;
+    stroke-dashoffset: 3000;
+    animation: totalDash 3s linear forwards;
+}
+
+/* 
+Device = Low Resolution Tablets, Mobiles (Landscape)
+Screen = B/w 481px to 767px
+*/
+@media (min-width: 300px) and (max-height: 600px) {
+    .navList li {
+        flex-direction: row-reverse;
+        gap: clamp(10px, 0.5em, 25px);
+    }
+
+    .navList p {
+        margin-top: 0;
+    }
+
+    #winSubTitle {
+        display: none !important;
+    }
+}
+    
+/* 
+##Device = Most of the Smartphones Mobiles (Portrait)
+##Screen = B/w 320px to 479px
+*/
+
+@media only screen and (max-width: 650px){
+    #navsContainer {
+        display: none !important;
+    }
+
+    canvas {
+        display: none !important;
+    }
+
+    #smallDisp {
+        display: block;
+    }
+
+    #turnDisp {
+        display: none;
+    }
+}
+
+@media only screen and (max-height: 350px){
+    #navsContainer {
+        display: none !important;
+    }
+
+    canvas {
+        display: none !important;
+    }
+
+    #smallDisp {
+        display: block;
+    }
+
+    #turnDisp {
+        display: none;
+    }
+
+}
+
+@media only screen and (min-width: 350px) and (min-height: 650px) and (orientation: portrait) {
+    #navsContainer {
+        display: none !important;
+    }
+
+    canvas {
+        display: none !important;
+    }
+
+    #smallDisp {
+        display: none;
+    }
+
+    #turnDisp {
+        display: block;
+    }
+}
+
+
+/*
+    Per il media query devo far si che si renda leggibile il sito in quelunque dimensione
+    Potrei fare si che il sito sia utilizzabile anche da smartphone in orizzontale (lendscape)
+    Fare quindi un controllo che sotto una certa larghezza allora viene messo l'avviso che non può funzionare
+    ma devo trovare una unità di misura per la nav bar
+    Ovviamente devo dire che anche sotto una certa altezza non può funzionare altrimenti non si capisce nula
+    come cavolo faccio????'
+
+
+    devo pure cambiare la tecnica del drag and drop CAZZO
+    ma questo lo farò più avanti sicuramente
+*/
