@@ -2622,6 +2622,4 @@ function requestGeneration() {
 
         }
     })
-
-
 }
