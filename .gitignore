@@ -18,3 +18,5 @@ env.bak/
 venv.bak/ 
 env.sh
 
+requirements.txt
+
