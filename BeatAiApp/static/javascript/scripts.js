@@ -49,13 +49,8 @@ function backToMainNav(type) {
     document.getElementById("mainNavInactive").setAttribute("id", "mainNavActive");
 }
 
-/*
-document.getElementById("btnExpl").addEventListener("click", funtion() {
 
-})
-
-document.getElementById("btnExpl").onclick = explanation()
-*/
+document.getElementById("btnExpl").onclick = function() {setExplanation(true)}
 
 document.getElementById("btnCrtLevel").onclick = function() {activeSubNav('create')}
 document.getElementById("btnPlayLevel").onclick = function() {activeSubNav('play')}
@@ -669,6 +664,18 @@ function setLoadingIcon(value) {
         var elem = document.getElementById("loadingVisible")
         if(elem)
             elem.setAttribute("id", "loadingHidden")
+    }
+}
+
+function setExplanation(value) {
+    if(value) {
+        var elem = document.getElementById("explHidden")
+        if(elem)
+            elem.setAttribute("id", "explVisible")
+    } else {
+        var elem = document.getElementById("explVisible")
+        if(elem)
+            elem.setAttribute("id", "explHidden")
     }
 }
 
