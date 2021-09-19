@@ -199,8 +199,11 @@ function gameLoop(timeStamp) {
             }
 
             //incomingWin and winAi will stop asking new generation if somewin
-            if(!incomingWin && !winAi && genLoading < genToLoad){
-                requestGeneration(); 
+            if(mode !== modes.DEFAULT && !incomingWin && !winAi && genLoading < genToLoad){
+                console.log("Gen Loading" + genLoading)
+                console.log("Gen to Load " + genToLoad)
+                console.log("richiesta di una nuova generazione")
+                requestGeneration();
                 genLoading++;
             }
             break
@@ -454,8 +457,6 @@ if (stopBtn.addEventListener){
         }
     })
 }
-
-
 
 addEventListener('mousedown', event => {
     //add the item to the map if is possible
@@ -1843,11 +1844,15 @@ function restartGame(resizing = false) {
             document.getElementById("attemptCounter").textContent = attemptCounter    
         }
 
-        player.x = player.nColumn * sideSquare
-        player.y = player.nRow * sideSquare
-
-        end.x = end.nColumn * sideSquare
-        end.y = end.nRow * sideSquare
+        if(player !== null) {
+            player.x = player.nColumn * sideSquare
+            player.y = player.nRow * sideSquare
+        }
+        
+        if(end !== null) {
+            end.x = end.nColumn * sideSquare
+            end.y = end.nRow * sideSquare
+        }
 
         win = false        
     }
@@ -2583,6 +2588,8 @@ function requestGeneration() {
 
     var csrf = $("input[name=csrfmiddlewaretoken]").val()
 
+    console.log("Sending request generation for: " + genToLoad)
+
     $.ajax ({
         url : 'input/generation',
         type : "post",
@@ -2596,30 +2603,31 @@ function requestGeneration() {
 
             if(response.value !== 'Stopped') {
 
-                console.log("generation: " +  genToLoad)
+                console.log("Arrived generation: " +  genToLoad)
             
                 //to initialize
 
                 if(response.win === true){
                     incomingWin = true
-                    console.log("this generation win")
-                    genToLoad = -1
+                    console.log("This generation win: " + genToLoad)
+                    genToLoad = 0
                 } else {
                     genToLoad++;
                 }
 
                 var outputs = JSON.parse(response.outputsGeneration)
 
-                //console.log(outputs[2][1][0])
-
                 genOutputs.push(outputs)
-
-                //console.log(outputs.length)
             }
             else {
                 console.log("arrived usefull generation")
             }
-
+        },
+        error: function() {
+            //Have to make an error screen, something like "Something bad append..."
+            console.log("Error in request generation")
+            //Request again the generation, don't know if this is a proper way
+            requestGeneration()
         }
     })
 }
