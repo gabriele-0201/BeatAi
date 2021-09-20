@@ -1,5 +1,6 @@
 const modes = {
     DEFAULT: "default",
+    EXPLANATION: "explanation",
 	CREATE: "create",
 	PLAY: "play",
 	AI: "ai",
@@ -11,7 +12,9 @@ let mode = modes.DEFAULT
 
 //navbar
 function activeSubNav(type) {
-    
+    if(mode === modes.EXPLANATION) 
+        return
+
     change = false
     switch (type) {
         case 'create':
@@ -384,6 +387,23 @@ function draw() {
 
 }
 
+var explBackBtn = document.getElementById("buttonContainer");
+if(explBackBtn.addEventListener) {
+    explBackBtn.addEventListener("mouseover", function() {
+        document.getElementById("explBackPath").classList.toggle("explPathAnimation");
+    })   
+
+    explBackBtn.addEventListener("mouseout", function() {
+        document.getElementById("explBackPath").classList.toggle("explPathAnimation");
+    })  
+
+    explBackBtn.addEventListener("click", function() {
+        if(mode === modes.EXPLANATION) {
+            setExplanation(false)
+        }
+    })
+}
+
 var modImg = document.getElementById("modifierImage") //modifierImage element
 if (modImg.addEventListener){
     modImg.addEventListener("click", function() {
@@ -670,12 +690,16 @@ function setLoadingIcon(value) {
 function setExplanation(value) {
     if(value) {
         var elem = document.getElementById("explHidden")
-        if(elem)
+        if(elem){
             elem.setAttribute("id", "explVisible")
+            mode = modes.EXPLANATION
+        }
     } else {
         var elem = document.getElementById("explVisible")
-        if(elem)
+        if(elem) {
             elem.setAttribute("id", "explHidden")
+            mode = modes.DEFAULT
+        }
     }
 }
 

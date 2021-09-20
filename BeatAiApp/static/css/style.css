@@ -516,7 +516,7 @@ canvas {
     justify-content: space-evenly;
     border-radius: 15px;
     transform: translate(-50%, -50%);
-    height: clamp(250px, 50vh, 1500px);
+    height: clamp(250px, 60vh, 1500px);
     width: clamp(400px, 50vw, 2000px);
     padding: clamp(5px, 1vh, 50px);
 }
@@ -537,18 +537,38 @@ canvas {
     text-align: center;
 }
 
-#buttonsContainer {
+#buttonContainer {
     position: absolute;
-    bottom: 0;
-    right: 0;
+    top: clamp(5px, 1vh, 50px);
+    left: clamp(5px, 1vh, 50px);
 }
 
 .explTitle {
-    font-size: clamp(15px, 2vh ,50px)
+    font-size: clamp(15px, 3vh ,50px);
 }
 
 .explText {
-    font-size: clamp(10px, 1.5vh ,35px)
+    font-size: clamp(10px, 2vh ,35px);
+}
+
+#explBack {
+    height: clamp(15px, 2.5vh ,50px);
+    background-color: #898989;
+
+}
+#buttonContainer {
+    background-color: #898989;
+}
+
+#explBackPath {
+    stroke: #2F2F2F;
+    stroke-width: 30;
+}
+
+.explPathAnimation {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: totalDash 1.5s linear forwards;
 }
 
 /* 
