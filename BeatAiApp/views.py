@@ -469,6 +469,8 @@ def eval_genomes(genomes, config):
 
     gen = gen + 1
 
+    print("Generazione pronta: " + str(int(gen - 1)))
+
     return
 
 
