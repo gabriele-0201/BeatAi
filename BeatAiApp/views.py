@@ -17,8 +17,6 @@ import time
 
 import logging
 
-logger = logging.getLogger(__name__)
-
 gen = 0
 
 # Every element rapresent the outputs of each generation
@@ -151,8 +149,7 @@ def newGeneration(request):
     global generationOutputs
 
     if request.is_ajax():
-        #print("arrivedRequest")
-        logger.debug("arrivedRequest")
+        print("arrivedRequest", flush = True)
 
         genRequest = int(request.POST.get('generation'))
 
@@ -169,7 +166,7 @@ def newGeneration(request):
 
         responseJson = json.dumps(response)
 
-        print("sentResponse")
+        print("sentResponse", flush = True)
 
         #print(responseJson)
 
@@ -472,7 +469,7 @@ def eval_genomes(genomes, config):
 
     gen = gen + 1
 
-    print("Generazione pronta: " + str(int(gen - 1)))
+    print("Generazione pronta: " + str(int(gen - 1)), flush = True)
 
     return
 
