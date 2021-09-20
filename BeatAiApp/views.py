@@ -17,6 +17,8 @@ import time
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 gen = 0
 
 # Every element rapresent the outputs of each generation
@@ -149,7 +151,8 @@ def newGeneration(request):
     global generationOutputs
 
     if request.is_ajax():
-        print("arrivedRequest")
+        #print("arrivedRequest")
+        logger.debug("arrivedRequest")
 
         genRequest = int(request.POST.get('generation'))
 
