@@ -3,8 +3,9 @@ from typing import Tuple
 from django.shortcuts import render
 from django.http import HttpResponse, response
 from django.views.generic import View
-
 from django.http import JsonResponse
+from .models import Client, Generation
+
 from .player import Player
 from .wall import Wall
 from .ball import Ball
@@ -15,73 +16,93 @@ import neat
 import math
 import time
 
-import logging
 
-gen = 0
+#gen = 0
 
 # Every element rapresent the outputs of each generation
 # Each output is made by an array, each element is a player
 # For every player there is an array of tuple wich represent the movement
 # Tuple = (upDown, rightLeft)
-generationOutputs = []
+#generationOutputs = []
 
-nets = []
-ge = []
-players = []  
+#nets = []
+#ge = []
+#players = []  
 
-walls = []
-balls = []
+#walls = []
+#balls = []
 
-rows = -1
-columns = -1
-height = -1
-width = -1
+#rows = -1
+#columns = -1
+#height = -1
+#width = -1
 sideSquare = 10
 
-cicleToRemove = 90
+#cicleToRemove = 90
 
-cicleToDecrease = 30
+#cicleToDecrease = 30
 
-minDistance = -1
+#minDistance = -1
 
-possibleMov = 40
+#possibleMov = 40
 
-win = False
-incLean = True
+#win = False
+#incLean = True
 
-idClient = -1
+#stopThread = False
+#thread = None
 
-local_dir = ''
-
-stopThread = False
-thread = None
+#Have to use a global variable to pass the idClient to the eval_genomes function
+#Otherwise the algorithm could not see the right Output in the database
+currentIdClient = -1
 
 # Create your views here.
 
 def index(request):
-    resetVaribleServer()
+    #resetVaribleServer()
+
+    #Here I could see if there was a previous connection and remember the level
+    #I don't know how I could rember the clients
 
     return render(request, "main/base.html", {})
 
 
 def startAiPlay(request):
-    global map, balls, width, height, rows, columns, incLean, local_dir, thread
+    #global map, balls, width, height, rows, columns, incLean, local_dir, thread
+    global currentIdClient
 
     if request.is_ajax():
         print(request.POST.get("value"))
 
-        #load the map
+        #Select an Id for the Client
+        idClient = setIdClient()
+        currentIdClient = idClient
+
+        #load the values form the arrived message
         map = json.loads(request.POST.get("map"))
-
         incLean = True if request.POST.get("incremental") == 'true' else False
-
-        #load nColumns and nRows
         rows = int(request.POST.get("rows"))
         columns = int(request.POST.get("columns"))
         width = columns * sideSquare
         height = rows * sideSquare
+        population = int(request.POST.get("population"))
 
-        #load the array of ball
+        #create a db object
+        client = Client(
+            idClient = idClient,
+            population = population,
+            incLean = incLean,
+            rows = rows,
+            columns = columns,
+            height = height,
+            width = width,
+            map = map
+        )
+
+        setPopulation(population, idClient)
+
+        #load the array of balls
+        balls = []
         ballsSring = request.POST.getlist("balls[]")
         for ballStr in ballsSring:
             ballJson = json.loads(ballStr)
@@ -92,23 +113,28 @@ def startAiPlay(request):
             ball.initSide = ballJson['initSide']
 
             balls.append(ball)
+
+        #create end save the objects
+
+        client.balls = json.dumps(balls)
+
+        #end = End(findElement(3))
+        client.endX = findElement(map, 3)[1] * sideSquare
+        client.endY = findElement(map, 3)[0] * sideSquare
         
-
-        local_dir = os.path.dirname(__file__)
-
-        setIdClient()
-    
-        setPopulation(int(request.POST.get("population")))
+        client.walls = json.dumps(createWallArray(map))
+        
+        #before starting the neat alghorithm I have to dave to db the object
+        client.save()
 
         # Determine path to configuration file. This path manipulation is
         # here so that the script will run successfully regardless of the
         # current working directory.
-        config_path = os.path.join(local_dir, 'neatConfigs/clients/' + str(idClient) + '.txt')
+        config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/clients/' + str(idClient) + '.txt')
 
         #start the main funciton in a thread to separate the request and response of the algorithm and the web page
         thread = threading.Thread(target = run, args = (config_path, ))
-        thread.start() #run(config_path)
-        
+        thread.start()
 
         return JsonResponse({"value": "Started Ai Play"}, status = 200)
 
@@ -116,29 +142,40 @@ def startAiPlay(request):
         return JsonResponse({"value": "BadRequest"}, status = 200)
 
 def stopAiPlay(request):
-    global thread, stopThread
+    #global thread, stopThread
     if request.is_ajax():
         print(request.POST.get("value"))
+
+        idClient = request.POST.get("id")
+
+        client = Client.objects.get(idClient = idClient)
+
+        client.stopThread = True
 
         #Have to block and delate the Thread
         try:
             delateConfig()
         except:
-            print("errore nell'elim config")
+            print("Error Delating the config of this client: " + idClient)
 
+        '''
         with threading.Lock():
             stopThread = True
-        
+        '''
+
+        #Using only the variable stopThred I hope it will be seen by the thread and finish it
+        '''
         try:
             if (thread.is_alive()):
                 thread.join()
         except:
             print("errore nel Thread")
+        '''
 
+        #Theorically I don't need anymore global variables so I don't have to reset it
+        #resetVaribleServer()
 
-        resetVaribleServer()
-
-        print("arrivato in fondo")
+        print("Stoppped Thread")
 
         return JsonResponse({"value": "Stopped Ai Play"}, status = 200)
     else:
@@ -168,8 +205,6 @@ def newGeneration(request):
 
         print("sentResponse", flush = True)
 
-        #print(responseJson)
-
         if(stopThread):
             return JsonResponse({"value": "Stopped"}, status = 200)
         else:
@@ -184,9 +219,8 @@ def newGeneration(request):
 
 #Setting the IP of the client
 def setIdClient():
-    global idClient
 
-    config_list_path = os.path.join(local_dir, 'neatConfigs/clients/')
+    config_list_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/clients/')
 
     files = os.listdir(config_list_path)
 
@@ -196,27 +230,27 @@ def setIdClient():
 
     idClient = 1 if len(ids) == 0 else (int(ids[-1]) + 1)
 
-    print(idClient)
+    return idClient
 
 
-def setPopulation(pop):
-    config_path = os.path.join(local_dir, 'neatConfigs/config-feedforward.txt')
+def setPopulation(pop, idClient):
+    config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/config-feedforward.txt')
 
     with open(config_path, 'r') as f:
         data = f.read()
 
     data = data.replace('POPULATION_TO_BE_SET', str(pop))
 
-    new_config_path = os.path.join(local_dir, 'neatConfigs/clients/' + str(idClient) + '.txt')
+    new_config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/clients/' + str(idClient) + '.txt')
 
     print(new_config_path)
 
     with open(new_config_path, 'w') as f:
         f.write(data)
 
-def delateConfig():
+def delateConfig(idClient):
 
-    config_file = os.path.join(local_dir, 'neatConfigs/clients/' + str(idClient) + '.txt')
+    config_file = os.path.join(os.path.dirname(__file__), 'neatConfigs/clients/' + str(idClient) + '.txt')
 
     if os.path.isfile(config_file):
         os.remove(config_file)
@@ -241,21 +275,12 @@ def resetVaribleServer():
     possibleMov = 40
     win = False
     incLean = True
-    idClient = -1
     local_dir = ''
     stopThread = False
     thread = None
 
 def run(config_file):
-    global end, walls, balls, minDistance
-
-    #create end object and walls array
-
-    end = End(findElement(3))
-    
-    createWallArray()
-
-    minDistance = -1
+    #global end, walls, balls, minDistance
 
     """
     runs the NEAT algorithm to train a neural network to play the game
@@ -279,7 +304,7 @@ def run(config_file):
 
     print('\nBest genome:\n{!s}'.format(winner))
 
-def findElement(n):
+def findElement(map, n):
     for i in range(len(map)):
         for j in range(len(map[i])):
             if(map[i][j] == n):
@@ -292,13 +317,16 @@ def moveObjects(walls, balls):
         ball.move(walls)
         #print(str(ball.x) + " - " + str(ball.y))
 
-def createWallArray():
-    global walls
+def createWallArray(map):
+    walls = []
 
     for i in range(len(map)):
         for j in range(len(map[i])):
             if(map[i][j] == 2):
                 walls.append(Wall(i, j, sideSquare))
+    
+    return walls
+
 
 def restartGame(balls):
     for ball in balls:
@@ -309,13 +337,26 @@ def restartGame(balls):
 def currentMillis():
     return round(time.time() * 1000)
 
+#Have to stop use this mini class and use only tha variables in the database
 class End:
     def __init__(self, nRowAndNcol):
         self.x = nRowAndNcol[1] * sideSquare
         self.y = nRowAndNcol[0] * sideSquare
 
 def eval_genomes(genomes, config):
-    global nets, ge, inputs, outputs, gen, generationOutputs, minDistance, walls, possibleMov
+    global currentIdClient
+    
+    if(currentIdClient == -1):
+        print("There is Some Problem detecting the right client")
+        client = None
+    else:
+        client = Client.objects.get(idClient = currentIdClient)
+    
+    currentIdClient = -1
+
+    nets = []
+    ge = []
+    players = []
 
     # start by creating lists holding the genome itself, the
     # neural network associated with the genome and the
@@ -328,7 +369,12 @@ def eval_genomes(genomes, config):
         ge.append(genome)
         players.append(Player(findElement(1), sideSquare, width, height, rows, columns))
     
-    generationOutputs.append([[] for _ in range(len(genomes))])
+    #generationOutputs.append([[] for _ in range(len(genomes))])
+
+    #This is the array that contain all the movemets for each player in the current generation
+    #Finished the movements this will be added to the database so the request NewGeneration could see it
+    
+    genOut = [[] for _ in range(len(genomes))]
 
     toRemove = []
     
