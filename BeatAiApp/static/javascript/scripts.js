@@ -2332,6 +2332,8 @@ window.onkeyup = checkKeyUp;
 
 
 //AI PLAY GAME
+idClient = -1
+
 var playAiBtn = document.getElementById("playAiBtn");
 if(playAiBtn.addEventListener) {
     playAiBtn.addEventListener("click", function() {
@@ -2502,6 +2504,7 @@ function endComunicationAi() {
         type : "post",
         data : {
             value: "stopPlay",
+            idClient : idClient,
             csrfmiddlewaretoken : csrf
         },
         success: function(response) {
@@ -2548,7 +2551,9 @@ function startComunicationAi() {
         success: function(response) {
             
             console.log(response.value)
-
+            idClient = response.idClient
+            console.log(idClient)
+            
             mode = modes.AI_LOADING
             setLoadingIcon(true)
         }
@@ -2627,6 +2632,7 @@ function requestGeneration() {
         data : {
             value: "NewGenerationNeeded",
             generation: genToLoad,
+            idClient : idClient,
             csrfmiddlewaretoken : csrf
         },
         // async: false,
@@ -2649,6 +2655,10 @@ function requestGeneration() {
                 var outputs = JSON.parse(response.outputsGeneration)
 
                 genOutputs.push(outputs)
+
+                //console.log("Lughezza dell'ouutput " + outputs[0].length)
+                //console.log("COntenuto: \n " + response.outputsGeneration)
+                console.log("COntenuto: \n " + outputs[0][0])
             }
             else {
                 console.log("arrived usefull generation")

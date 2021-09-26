@@ -1,4 +1,3 @@
-import json
 from typing import Tuple
 from django.shortcuts import render
 from django.http import HttpResponse, response
@@ -10,12 +9,13 @@ from .player import Player
 from .wall import Wall
 from .ball import Ball
 from .lines import Lines
+
 import threading
 import os
 import neat
 import math
 import time
-
+import json
 
 #gen = 0
 
@@ -51,10 +51,6 @@ sideSquare = 10
 
 #stopThread = False
 #thread = None
-
-#Have to use a global variable to pass the idClient to the eval_genomes function
-#Otherwise the algorithm could not see the right Output in the database
-currentIdClient = -1
 
 # Create your views here.
 
@@ -116,13 +112,13 @@ def startAiPlay(request):
 
         #create end save the objects
 
-        client.balls = json.dumps(balls)
+        client.balls = createJsonArrayBalls(balls)
 
         #end = End(findElement(3))
         client.endX = findElement(map, 3)[1] * sideSquare
         client.endY = findElement(map, 3)[0] * sideSquare
         
-        client.walls = json.dumps(createWallArray(map))
+        #client.walls = json.dumps(createWallArray(map))
         
         #before starting the neat alghorithm I have to dave to db the object
         client.save()
@@ -133,10 +129,13 @@ def startAiPlay(request):
         config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/clients/' + str(idClient) + '.txt')
 
         #start the main funciton in a thread to separate the request and response of the algorithm and the web page
-        thread = threading.Thread(target = run, args = (config_path, ))
+        thread = threading.Thread(target = run, args = (config_path, idClient, ))
         thread.start()
 
-        return JsonResponse({"value": "Started Ai Play"}, status = 200)
+        return JsonResponse({
+            "value": "Started Ai Play",
+            "idClient" : idClient
+            }, status = 200)
 
     else:
         return JsonResponse({"value": "BadRequest"}, status = 200)
@@ -144,17 +143,17 @@ def startAiPlay(request):
 def stopAiPlay(request):
     #global thread, stopThread
     if request.is_ajax():
-        print(request.POST.get("value"))
+        print(request.POST.get("value"), flush = True)
 
-        idClient = request.POST.get("id")
-
-        client = Client.objects.get(idClient = idClient)
+        idClient = int(request.POST.get('idClient')) 
+        client = Client.objects.get(idClient=idClient)
 
         client.stopThread = True
 
         #Have to block and delate the Thread
         try:
-            delateConfig()
+            delateConfig(idClient)
+            client.delete()
         except:
             print("Error Delating the config of this client: " + idClient)
 
@@ -183,35 +182,39 @@ def stopAiPlay(request):
 
 
 def newGeneration(request):
-    global generationOutputs
 
     if request.is_ajax():
         print("arrivedRequest", flush = True)
 
-        genRequest = int(request.POST.get('generation'))
+        idClient = int(request.POST.get('idClient')) 
+        client = Client.objects.get(idClient=idClient)
+
+        genRequest = (int(request.POST.get('generation'))) #+1 is because the count in the db and the id is starting from 1
+
+        print("genRequest: " + str(genRequest))
 
         #give to the server two more generation to make the thing more fluent
 
-        while genRequest >= gen and not stopThread:
+        while genRequest >= client.generation_set.count() and not client.stopThread:
             continue
         
         #If arrived an unexpected generation respond with an error
         try:
-            response = generationOutputs[genRequest]
+            response = client.generation_set.all()[genRequest].value
         except:
             return JsonResponse({"value": "BadGenerationRequest"}, status = 400)
 
-        responseJson = json.dumps(response)
+        #responseJson = json.dumps(response)
 
         print("sentResponse", flush = True)
 
-        if(stopThread):
+        if(client.stopThread):
             return JsonResponse({"value": "Stopped"}, status = 200)
         else:
             return JsonResponse({
                 "value": "GenerationRedy",
-                "outputsGeneration": responseJson,
-                "win" : win
+                "outputsGeneration": response,
+                "win" : client.generation_set.all()[genRequest].win
                 }, status = 200)
 
     else :
@@ -232,7 +235,7 @@ def setIdClient():
 
     return idClient
 
-
+#Write in the config file the population and the number of the client
 def setPopulation(pop, idClient):
     config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/config-feedforward.txt')
 
@@ -240,6 +243,7 @@ def setPopulation(pop, idClient):
         data = f.read()
 
     data = data.replace('POPULATION_TO_BE_SET', str(pop))
+    data = data.replace('CLIENT_ID_TO_BE_SET', str(idClient))
 
     new_config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/clients/' + str(idClient) + '.txt')
 
@@ -279,7 +283,7 @@ def resetVaribleServer():
     stopThread = False
     thread = None
 
-def run(config_file):
+def run(config_file, idClient):
     #global end, walls, balls, minDistance
 
     """
@@ -289,7 +293,7 @@ def run(config_file):
     """
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                         config_file)
+                         config_file, config_information=idClient)
 
     # Create the population, which is the top-level object for a NEAT run.
     p = neat.Population(config)
@@ -327,7 +331,6 @@ def createWallArray(map):
     
     return walls
 
-
 def restartGame(balls):
     for ball in balls:
         ball.side = ball.initSide
@@ -338,25 +341,56 @@ def currentMillis():
     return round(time.time() * 1000)
 
 #Have to stop use this mini class and use only tha variables in the database
+'''
 class End:
     def __init__(self, nRowAndNcol):
         self.x = nRowAndNcol[1] * sideSquare
         self.y = nRowAndNcol[0] * sideSquare
+'''
+def jsonToBalls(strBalls, width, height):
+    jsonBalls = json.loads(strBalls)
+
+    balls = []
+
+    for jsonBall in jsonBalls:
+        jsonBall = json.loads(jsonBall)
+        ball = Ball(jsonBall["nRow"], jsonBall["nColumn"], sideSquare, width, height)
+        ball.dir = jsonBall["dir"]
+        ball.speed = jsonBall["speed"]
+        ball.initSide = jsonBall["initSide"]
+        ball.side = jsonBall["side"]
+
+        #have to update the x and y with the position of the moving balls
+        ball.x = jsonBall["x"]
+        ball.y = jsonBall["y"]
+
+        balls.append(ball)
+
+    return balls
+
+def createJsonArrayBalls(balls):
+    jsonBalls = []
+    
+    for ball in balls:
+        jsonBalls.append(ball.getJson())
+
+    return json.dumps(jsonBalls)
 
 def eval_genomes(genomes, config):
-    global currentIdClient
+    idClient = config.config_information
+
+    print("ID CLIENT: " + str(idClient), flush = True)
+
+    client = Client.objects.get(idClient = idClient)
     
-    if(currentIdClient == -1):
-        print("There is Some Problem detecting the right client")
-        client = None
-    else:
-        client = Client.objects.get(idClient = currentIdClient)
-    
-    currentIdClient = -1
+    #currentIdClient = -1
 
     nets = []
     ge = []
     players = []
+
+    map = client.map
+    walls = createWallArray(map)
 
     # start by creating lists holding the genome itself, the
     # neural network associated with the genome and the
@@ -367,7 +401,7 @@ def eval_genomes(genomes, config):
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         nets.append(net)
         ge.append(genome)
-        players.append(Player(findElement(1), sideSquare, width, height, rows, columns))
+        players.append(Player(findElement(map, 1), sideSquare, client.width, client.height, client.rows, client.columns))
     
     #generationOutputs.append([[] for _ in range(len(genomes))])
 
@@ -377,9 +411,10 @@ def eval_genomes(genomes, config):
     genOut = [[] for _ in range(len(genomes))]
 
     toRemove = []
+    winGen = False
     
-    if(incLean and gen != 0 and gen % 5 == 0):
-        possibleMov = possibleMov + 50
+    if(client.incLean and client.generation_set.count() != 0 and client.generation_set.count() % 5 == 0):
+        client.possibleMov = client.possibleMov + 40
 
     for i, genomeTuple in enumerate(genomes):
         genome = genomeTuple[1]
@@ -387,24 +422,28 @@ def eval_genomes(genomes, config):
         running = True
 
         #This is the only way to stop the neat algorithm
-        if(stopThread):
+        if(client.stopThread):
             genome.fitness = 1000000
             break
+        
+        balls = jsonToBalls(client.balls, client.width, client.height)
+        #restartGame(balls)
 
-        restartGame(balls)
-
-        minDistance = getDistance(players[i], end)
+        client.minDistance = getDistance(players[i], client.endX, client.endY)
 
         movements = 0
+        maxMov = client.possibleMov
 
-        while running and movements <= possibleMov:
+        while running and movements < maxMov:
 
-            mesureLinesS(players[i])
+            
+
+            mesureLines(players[i], map, balls, client.columns, client.rows, client.width, client.height)
 
             #create the output
             #Now the outputs have to be an array of array (the interith array has only two values, the first Up/Down and the secondo Left/Right)
 
-            outputArray = nets[i].activate((players[i].lines.upLine, players[i].lines.downLine, players[i].lines.leftLine, players[i].lines.rightLine, players[i].lines.upRightLine, players[i].lines.upLeftLine, players[i].lines.downRightLine, players[i].lines.downLeftLine, players[i].x, players[i].y, end.x, end.y))
+            outputArray = nets[i].activate((players[i].lines.upLine, players[i].lines.downLine, players[i].lines.leftLine, players[i].lines.rightLine, players[i].lines.upRightLine, players[i].lines.upLeftLine, players[i].lines.downRightLine, players[i].lines.downLeftLine, players[i].x, players[i].y, client.endX, client.endY))
 
             output = []
 
@@ -422,7 +461,7 @@ def eval_genomes(genomes, config):
             else:
                 output.append('')
 
-            generationOutputs[gen][i].append(output)
+            genOut[i].append(output)
 
             #Now I have to remove fitness If the output make a move to a lenght of zero
             #for i, genome in enumerate(ge):
@@ -441,19 +480,19 @@ def eval_genomes(genomes, config):
                 genome.fitness -= 3
             '''
 
-            if(generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][0] == 'up'): # little bit sketchy
-                generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][0] = players[i].moveUp(walls)
-            elif(generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][0]  == 'down'):
-                generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][0] = players[i].moveDown(walls)
+            if(genOut[i][len(genOut[i]) - 1][0] == 'up'): # little bit sketchy
+                genOut[i][len(genOut[i]) - 1][0] = players[i].moveUp(walls)
+            elif(genOut[i][len(genOut[i]) - 1][0]  == 'down'):
+                genOut[i][len(genOut[i]) - 1][0] = players[i].moveDown(walls)
             else:
-                generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][0] = players[i].y
+                genOut[i][len(genOut[i]) - 1][0] = players[i].y
 
-            if(generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][1]  == 'right'):
-                generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][1] = players[i].moveRight(walls)
-            elif(generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][1]  == 'left'):
-                generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][1] = players[i].moveLeft(walls)
+            if(genOut[i][len(genOut[i]) - 1][1]  == 'right'):
+                genOut[i][len(genOut[i]) - 1][1] = players[i].moveRight(walls)
+            elif(genOut[i][len(genOut[i]) - 1][1]  == 'left'):
+                genOut[i][len(genOut[i]) - 1][1] = players[i].moveLeft(walls)
             else:
-                generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][1] = players[i].x
+                genOut[i][len(genOut[i]) - 1][1] = players[i].x
 
 
             players[i].addToHistory()
@@ -465,23 +504,24 @@ def eval_genomes(genomes, config):
 
             #Remove fitness if the player is stall in a single place for too many time
 
-            if(players[i].haveToDecrease(cicleToDecrease)):
+            if(players[i].haveToDecrease(client.cicleToDecrease)):
                 genome.fitness -= 2
                 #players[i].clearHistory()
                 #print("descrease to: " + str(i))
 
-            if(checkCollisionAIS(players[i])):
+            if(checkCollisionAIS(players[i], balls)):
                 genome.fitness -= 50
                 running = False
                 toRemove.append(i)
                 break
 
-            if(checkWinAi(players[i])):
+            if(checkWinAi(players[i], client.endX, client.endY)):
+                winGen = True
                 genome.fitness = 1000000
                 running = False
                 break
 
-            if(players[i].haveToRemove(cicleToRemove)):
+            if(players[i].haveToRemove(client.cicleToRemove)):
                 genome.fitness -= 10
                 running = False
                 toRemove.append(i)
@@ -489,14 +529,14 @@ def eval_genomes(genomes, config):
 
             #add fitness to the player who is more near to the end
 
-            nowDistance = getDistance(players[i], end)
+            nowDistance = getDistance(players[i], client.endX, client.endY)
             #print(nowDistance)
 
-            if(math.ceil(nowDistance) < math.floor(minDistance)):
+            if(math.ceil(nowDistance) < math.floor(client.minDistance)):
                 genome.fitness += 10
-                minDistance = nowDistance
+                client.minDistance = nowDistance
 
-            if(incLean):
+            if(client.incLean):
                 movements = movements + 1
 
 
@@ -507,26 +547,28 @@ def eval_genomes(genomes, config):
         ge.pop(index)
         players.pop(index)
 
-    if(incLean):
+    if(client.incLean):
         while len(nets) > 0:
             nets.pop()
             ge.pop()
             players.pop()
 
-    gen = gen + 1
+    #gen = gen + 1
+    client.generation_set.create(value=json.dumps(genOut), win=winGen)
+    client.save()
 
-    print("Generazione pronta: " + str(int(gen - 1)), flush = True)
+    print("Generazione pronta: " + str(int(client.generation_set.count() - 1)), flush = True)
 
     return
 
 
-def getDistance(player, end):
-    xDistance = abs((player.x + (sideSquare / 2)) - (end.x + (sideSquare / 2)))
-    yDistance = abs((player.y + (sideSquare / 2)) - (end.y + (sideSquare / 2))) 
+def getDistance(player, endX, endY):
+    xDistance = abs((player.x + (sideSquare / 2)) - (endX + (sideSquare / 2)))
+    yDistance = abs((player.y + (sideSquare / 2)) - (endY + (sideSquare / 2))) 
 
     return math.sqrt((xDistance * xDistance) + (yDistance * yDistance))
 
-def mesureLinesS(player):
+def mesureLines(player, map, balls, columns, rows, width, height):
 
     xC = player.x + (sideSquare / 2)
     yC = player.y + (sideSquare / 2)
@@ -1283,7 +1325,7 @@ def mesureLinesS(player):
                         player.lines.downLeftLine = ((nRowD) * sideSquare) - (player.y + sideSquare)
                     break
 
-def checkCollisionAIS(player):
+def checkCollisionAIS(player, balls):
 
     #(x - x0)^2 + (y - y0)^2 = r^2
     r = sideSquare / 2
@@ -1308,32 +1350,23 @@ def checkCollisionAIS(player):
 
     return False
 
-def checkWinAi(player):
-    global win
+def checkWinAi(player, endX, endY):
 
-    if(player.x < end.x + sideSquare and player.x + sideSquare > end.x + sideSquare  and player.y == end.y):
-        win = True
+    if(player.x < endX + sideSquare and player.x + sideSquare > endX + sideSquare  and player.y == endY):
         return True
-    elif(player.x + sideSquare > end.x and player.x < end.x  and player.y == end.y):
-        win = True
+    elif(player.x + sideSquare > endX and player.x < endX  and player.y == endY):
         return True
-    elif(player.y < end.y + sideSquare and player.y + sideSquare > end.y + sideSquare  and player.x == end.x):
-        win = True
+    elif(player.y < endY + sideSquare and player.y + sideSquare > endY + sideSquare  and player.x == endX):
         return True
-    elif(player.y + sideSquare > end.y and player.y < end.y  and player.x == end.x):
-        win = True
+    elif(player.y + sideSquare > endY and player.y < endY  and player.x == endX):
         return True
-    elif(player.x < end.x + sideSquare and player.x + sideSquare > end.x + sideSquare and player.y < end.y + sideSquare and player.y + sideSquare > end.y + sideSquare):
-        win = True
+    elif(player.x < endX + sideSquare and player.x + sideSquare > endX + sideSquare and player.y < endY + sideSquare and player.y + sideSquare > endY + sideSquare):
         return True
-    elif(player.x < end.x + sideSquare and player.x + sideSquare > end.x + sideSquare and player.y + sideSquare > end.y and player.y < end.y):
-        win = True
+    elif(player.x < endX + sideSquare and player.x + sideSquare > endX + sideSquare and player.y + sideSquare > endY and player.y < endY):
         return True
-    elif(player.x + sideSquare > end.x and player.x < end.x and player.y < end.y + sideSquare and player.y + sideSquare > end.y + sideSquare):
-        win = True
+    elif(player.x + sideSquare > endX and player.x < endX and player.y < endY + sideSquare and player.y + sideSquare > endY + sideSquare):
         return True
-    elif(player.x + sideSquare > end.x and player.x < end.x and player.y + sideSquare > end.y and player.y < end.y):
-        win = True
+    elif(player.x + sideSquare > endX and player.x < endX and player.y + sideSquare > endY and player.y < endY):
         return True
     else:
         return False

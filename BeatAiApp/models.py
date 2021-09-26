@@ -11,11 +11,10 @@ class Client(models.Model):
     columns = models.IntegerField()
     height = models.IntegerField()
     width = models.IntegerField()
-    win = models.BooleanField(default=False)
     stopThread = models.BooleanField(default=False)
     minDistance = models.IntegerField(default=-1)
     map = JSONField(blank=True, null=True)
-    walls = JSONField(blank=True, null=True)
+    #walls = JSONField(blank=True, null=True)
     balls = JSONField(blank=True, null=True)
     endX = models.IntegerField(blank=True, null=True)
     endY = models.IntegerField(blank=True, null=True)
@@ -27,6 +26,7 @@ class Generation(models.Model):
     output = models.ForeignKey(Client, on_delete=models.CASCADE)
 
     value = JSONField()
+    win = models.BooleanField(default=False)
 
     def __str__(self):
-        return json.dumps(self.generation)
+        return json.dumps(self.value)

@@ -1,4 +1,5 @@
 import math
+import json
 
 class Ball:
     def __init__(self, nRow, nColumn, sideSquare, width, height):
@@ -19,6 +20,20 @@ class Ball:
         self.sideSquare = sideSquare
         self.height = height
         self.width = width
+
+    def getJson(self):
+        b = {
+            "nRow" : self.nRow,
+            "nColumn" : self.nColumn,
+            "x" : self.x,
+            "y" : self.y,
+            "dir" : self.dir,
+            "speed" : self.speed,
+            "initSide" : self.initSide,
+            "side" : self.side
+        }
+
+        return json.dumps(b)
 
     def getNowColumn(self):
         return math.floor(self.x / self.sideSquare)

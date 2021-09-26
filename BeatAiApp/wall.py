@@ -1,3 +1,5 @@
+import json
+
 class Wall:
     def __init__(self, nRow, nColumn, sideSquare):
         self.nRow = nRow
@@ -6,29 +8,13 @@ class Wall:
         self.x = self.nColumn * sideSquare
         self.y = self.nRow * sideSquare
 
-        self.vertical = ""
-        self.horizontal = ""
+    def getJson(self):
+        w = {
+            "nRow" : self.nRow,
+            "nColumn" : self.nColumn,
+            "x" : self.x,
+            "y" : self.y,
+        }
 
-        self.playerStopUp = False
-        self.playerStopDown = False
-        self.playerStopLeft = False
-        self.playerStopRight = False
+        return json.dumps(w)
 
-        self.sideSquare = sideSquare
-
-    def setPlayerPosition(self, player):
-        #set the vertical
-        if(player.y + self.sideSquare <= self.y):
-            self.vertical = 'up'
-        elif (player.y >= self.y + self.sideSquare):
-            self.vertical = 'down'
-        else:
-            self.vertical = ""
-
-        #set the horizontal
-        if(player.x + self.sideSquare <= self.x):
-            self.horizontal = 'left'
-        elif(player.x >= self.x + self.sideSquare):
-            self.horizontal = 'right'
-        else:
-            self.horizontal = ""
