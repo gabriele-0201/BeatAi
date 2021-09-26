@@ -20,3 +20,4 @@ env.sh
 
 requirements.txt
 BeatAiApp/neatConfigs/clients/
+db.sqlite3
