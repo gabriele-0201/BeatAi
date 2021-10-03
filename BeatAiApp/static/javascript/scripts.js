@@ -385,7 +385,7 @@ function draw() {
     
     drawMap()
 
-    if (selectedItem != "" && selectedItem != "modifier" && xImg !== null && yImg !== null)
+    if (selectedItem != "" && selectedItem != "modifier" && selectedItem != "modifierJustInseredBall" && xImg !== null && yImg !== null)
         ctx.drawImage(images.get(selectedItem), xImg, yImg, sideSquare, sideSquare)
 
 }
@@ -480,17 +480,19 @@ addEventListener('mousedown', event => {
     //add the item to the map if is possible
     if (event.clientX > pLeft && event.clientX < (pLeft + canvas.width)) {
         if (event.clientY > (pTop + navsContainer.clientHeight) && event.clientY < (pTop + navsContainer.clientHeight + canvas.height)){
-            if (selectedItem != "")
+            if (selectedItem != ""){
                 mouseDown = true
+            console.log("iN HERE")
+            }
         }
     }
 })
 
 addEventListener('mouseup', event => {
-        if (selectedItem != ""){
-            mouseDown = false
+    if (selectedItem != ""){
+        mouseDown = false
+        console.log("OUT HERE")
     }
-
 })
 
 //Una soluzioni potrebbe essere andare a scorrere i tag e SE ho clicclato sull'interdo DIV, quindi il blocco crosso 
@@ -498,9 +500,9 @@ addEventListener('mouseup', event => {
 
 addEventListener('click', event => {
 
-    console.log(event.target.classList[0])
+    console.log("CLICK: " + event.target.classList[0])
 
-    if (event.target.classList[0] !== "arrows" && event.clientX > pLeft && event.clientX < (pLeft + canvas.width)) {
+    if (event.target.classList[0] !== "arrows" && event.target.classList[0] !== "gameDiv" && event.clientX > pLeft && event.clientX < (pLeft + canvas.width)) {
         if (event.clientY > (pTop + navsContainer.clientHeight) && event.clientY < (pTop + navsContainer.clientHeight + canvas.height)){
             if (selectedItem != "")
                 if(selectedItem == "modifier")
@@ -523,9 +525,7 @@ addEventListener('mousemove', (event) => {
 
         if (event.clientX > pLeft && event.clientX < (pLeft + canvas.width)) {
             if (event.clientY > (pTop + navsContainer.clientHeight) && event.clientY < (pTop + navsContainer.clientHeight + canvas.height)){
-                
                 setxyImg(event.clientX, event.clientY, pLeft, pTop)
-
                 if (mouseDown){
                     positioning(event.clientX, event.clientY)
                 }
@@ -599,7 +599,7 @@ function positioning(clientX, clientY) {
                 balls.push(ball)
                 
                 
-                selectedItem = ""
+                selectedItem = 'modifierJustInseredBall'
                 exBall = true
                 modifing(clientX, clientY)
                 
