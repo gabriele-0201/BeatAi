@@ -12,6 +12,7 @@ class Client(models.Model):
     height = models.IntegerField()
     width = models.IntegerField()
     stopThread = models.BooleanField(default=False)
+    finishedThread = models.BooleanField(default=False)
     minDistance = models.IntegerField(default=-1)
     map = JSONField(blank=True, null=True)
     #walls = JSONField(blank=True, null=True)

@@ -165,17 +165,23 @@
 
             <div class = "modifierDiv" id="modifierBall">
                 <svg width="434" height="375" viewBox="0 0 434 375" fill="none" xmlns="http://www.w3.org/2000/svg" id="arrowUpImg" class = "arrows">
-                    <path d="M217 0L433.506 375H0.493652L217 0Z" fill="#282828"/>
+                    <path class = "arrows" d="M217 0L433.506 375H0.493652L217 0Z" fill="#282828"/>
                 </svg>
                     
 
                 <div class = "centralLineModifier">
-                    <img src="{% static 'img/arrowLeft.svg' %}" alt="ArrowUp" draggable="false" id = "arrowLeftImg" class = "arrows">
-                    
-                    <img src="{% static 'img/arrowRight.svg' %}" alt="ArrowUp" draggable="false" id = "arrowRightImg" class = "arrows">
+                    <svg width="375" height="434" viewBox="0 0 375 434" fill="none" xmlns="http://www.w3.org/2000/svg" id = "arrowLeftImg" class = "arrows">
+                        <path class = "arrows" d="M0 217L375 0.493652L375 433.506L0 217Z" fill="#282828"/>
+                    </svg>
+
+                    <svg width="375" height="434" viewBox="0 0 375 434" fill="none" xmlns="http://www.w3.org/2000/svg" id = "arrowRightImg" class = "arrows">
+                        <path class = "arrows" d="M375 217L0 433.506L0 0.493652L375 217Z" fill="#282828"/>
+                    </svg>
                 </div>
-                
-                <img src="{% static 'img/arrowDown.svg' %}" alt="ArrowUp" draggable="false" id = "arrowDownImg" class = "arrows">
+
+                <svg width="434" height="375" viewBox="0 0 434 375" fill="none" xmlns="http://www.w3.org/2000/svg" id = "arrowDownImg" class = "arrows">
+                    <path class = "arrows" d="M217 375L0.493652 0L433.506 0L217 375Z" fill="#282828"/>
+                </svg>
 
             </div>
 

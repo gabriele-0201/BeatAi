@@ -4,6 +4,7 @@ from django.http import HttpResponse, response
 from django.views.generic import View
 from django.http import JsonResponse
 from .models import Client, Generation
+from time import sleep
 
 from .player import Player
 from .wall import Wall
@@ -149,6 +150,18 @@ def stopAiPlay(request):
         client = Client.objects.get(idClient=idClient)
 
         client.stopThread = True
+        client.save()
+
+        #lient.save(update_fields=['stopThread'])
+
+        while not client.finishedThread:
+            #print("WAIT", flush = True)
+            client.refresh_from_db()
+            sleep(0.05)
+            continue
+
+        print("FINISHED WAITING", flush = True)
+
 
         #Have to block and delate the Thread
         try:
@@ -383,14 +396,14 @@ def eval_genomes(genomes, config):
 
     client = Client.objects.get(idClient = idClient)
     
-    #currentIdClient = -1
-
     nets = []
     ge = []
     players = []
 
     map = client.map
     walls = createWallArray(map)
+
+    stopped = False
 
     # start by creating lists holding the genome itself, the
     # neural network associated with the genome and the
@@ -418,11 +431,14 @@ def eval_genomes(genomes, config):
 
     for i, genomeTuple in enumerate(genomes):
         genome = genomeTuple[1]
-
         running = True
+
+        client.refresh_from_db()
 
         #This is the only way to stop the neat algorithm
         if(client.stopThread):
+            print("BLOCCCATOOOOOOOOOOOOOOOOOOOOO", flush = True)
+            stopped = True
             genome.fitness = 1000000
             break
         
@@ -435,8 +451,6 @@ def eval_genomes(genomes, config):
         maxMov = client.possibleMov
 
         while running and movements < maxMov:
-
-            
 
             mesureLines(players[i], map, balls, client.columns, client.rows, client.width, client.height)
 
@@ -539,7 +553,6 @@ def eval_genomes(genomes, config):
             if(client.incLean):
                 movements = movements + 1
 
-
     toRemove.sort(reverse=True)
 
     for index in toRemove:
@@ -553,8 +566,12 @@ def eval_genomes(genomes, config):
             ge.pop()
             players.pop()
 
-    #gen = gen + 1
-    client.generation_set.create(value=json.dumps(genOut), win=winGen)
+    if not stopped:
+        client.generation_set.create(value=json.dumps(genOut), win=winGen)
+    
+    if stopped or winGen:
+        client.finishedThread = True
+    
     client.save()
 
     print("Generazione pronta: " + str(int(client.generation_set.count() - 1)), flush = True)
