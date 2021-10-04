@@ -150,7 +150,7 @@ def stopAiPlay(request):
         client = Client.objects.get(idClient=idClient)
 
         client.stopThread = True
-        client.save()
+        client.save(update_fields=['stopThread'])
 
         #lient.save(update_fields=['stopThread'])
 
@@ -429,15 +429,16 @@ def eval_genomes(genomes, config):
     if(client.incLean and client.generation_set.count() != 0 and client.generation_set.count() % 5 == 0):
         client.possibleMov = client.possibleMov + 40
 
+
     for i, genomeTuple in enumerate(genomes):
         genome = genomeTuple[1]
         running = True
 
+        client.save(update_fields=['possibleMov', 'minDistance'])
         client.refresh_from_db()
 
         #This is the only way to stop the neat algorithm
         if(client.stopThread):
-            print("BLOCCCATOOOOOOOOOOOOOOOOOOOOO", flush = True)
             stopped = True
             genome.fitness = 1000000
             break
@@ -571,8 +572,9 @@ def eval_genomes(genomes, config):
     
     if stopped or winGen:
         client.finishedThread = True
-    
-    client.save()
+        client.save(update_fields=['finishedThread'])
+
+    #client.save()
 
     print("Generazione pronta: " + str(int(client.generation_set.count() - 1)), flush = True)
 
