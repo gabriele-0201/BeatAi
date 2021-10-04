@@ -91,6 +91,8 @@ const rows = 15
 const columns = 30
 const minPadding = 50
 
+var showGrid = false
+
 var map = new Array(rows)
 for(var i=0; i<rows; i++) {
     map[i] = new Array(columns);
@@ -241,14 +243,13 @@ function drawGrid() {
         gameDiv.style.paddingTop = String((minPadding + rest) / 2) + "px"
         gameDiv.style.paddingBottom = String((minPadding + rest) / 2) + "px"
     }
-    showGrid = false
     if(showGrid) {
         for(var i = 1; i < rows; i++) {
-            drawLine([0, sideSquare * i], [canvas.width, sideSquare * i], 'black', 1)
+            drawLine([0, sideSquare * i], [canvas.width, sideSquare * i], '#898989', 1)
         }
 
         for(var j = 1; j < columns; j++) {
-            drawLine([sideSquare * j, 0], [sideSquare * j, canvas.height], 'black', 1)
+            drawLine([sideSquare * j, 0], [sideSquare * j, canvas.height], '#898989', 1)
         }
     }
 }

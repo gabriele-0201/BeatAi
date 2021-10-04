@@ -67,6 +67,16 @@ if (stopBtn.addEventListener){
     })
 }
 
+var toggleGrid = document.getElementById("toggleGrid");
+if(toggleGrid.addEventListener) {
+    toggleGrid.addEventListener("click", function() {
+        document.getElementById("linesNo").classList.toggle("toggleVisible");
+        document.getElementById("linesYes").classList.toggle("toggleVisible");
+
+        showGrid = !showGrid
+    })   
+}
+
 addEventListener('mousedown', event => {
     //add the item to the map if is possible
     if (event.clientX > pLeft && event.clientX < (pLeft + canvas.width)) {
