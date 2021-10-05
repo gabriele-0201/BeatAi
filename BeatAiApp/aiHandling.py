@@ -111,7 +111,6 @@ def eval_genomes(genomes, config):
             break
         
         balls = jsonToBalls(client.balls, client.width, client.height)
-        #restartGame(balls)
 
         client.minDistance = getDistance(players[i], client.endX, client.endY)
 
@@ -179,7 +178,7 @@ def eval_genomes(genomes, config):
 
             players[i].addToHistory()
             moveObjects(walls, balls)
-
+            
             #The collision is simply if some player is dead or not
             #lower the fitness and remove the player who collide with the balls or other objects
             #to remove properly the objects I have to sort the indexes before use the array to remove them
