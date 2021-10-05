@@ -2,7 +2,7 @@ import json
 import neat
 import math
 
-from .util import *
+from .utils import *
 from .models import Client, Generation
 
 from .wall import Wall

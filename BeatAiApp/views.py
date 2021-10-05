@@ -7,7 +7,7 @@ from .models import Client, Generation
 from time import sleep
 
 from .aiHandling import eval_genomes
-from .util import *
+from .utils import *
 from .player import Player
 from .wall import Wall
 from .ball import Ball
