@@ -51,6 +51,9 @@ def jsonToBalls(strBalls, width, height):
 
         balls.append(ball)
 
+    for ball, i in enumerate(balls):
+        print(str(i) + str(ball))
+
     return balls
 
 
