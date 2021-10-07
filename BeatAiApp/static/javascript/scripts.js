@@ -480,8 +480,27 @@ window.onload = function() {
 //To fix the resize when AI PLAY
 window.onresize = function() {
     editIncLean()
-    restartGame(resizing = true)
+    switch(mode) {
+        case modes.DEFAULT:
+        case modes.CREATE:
+        case modes.BALLS_SHOWING:
+            break
+        case modes.PLAY:
+            //debouncedResizeBalls(balls, canvas.width, canvas.height)
+            //debounce(resizeBalls(balls, canvas.width, canvas.height))    
+            resizeBalls(balls, canvas.width, canvas.height)
+            break
+        case modes.AI:
+            
+            break
+        case modes.AI_LOADING:
+
+            break
+    }
+
+    //restartGame(resizing = true)
 }
+
 
 function moveObjects(walls, balls) {
     balls.forEach(function(ball) {
@@ -742,7 +761,8 @@ function Wall(nRow, nColumn) {
     this.playerStopRight = false
 }
 
-function Ball(nRow, nColumn) {
+//Have to store also width and height to able the resize to resize the x and y of the balls
+function Ball(nRow, nColumn, width, height) {
     this.nRow = nRow
     this.nColumn = nColumn
 
@@ -756,6 +776,9 @@ function Ball(nRow, nColumn) {
     this.speed = sideSquare / 8
     this.initSide = "left"
     this.side = "left" // or right, up, down
+
+    this.width = width
+    this.height = height
 
     this.getNowColumn = function() {
         return Math.floor(this.x / sideSquare)

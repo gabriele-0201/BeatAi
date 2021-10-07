@@ -188,7 +188,7 @@ function positioning(clientX, clientY) {
                 
             if(map[nRow][nColumn] == 0){
                 map[nRow][nColumn] = 4
-                var ball = new Ball(nRow, nColumn)
+                var ball = new Ball(nRow, nColumn, canvas.width, canvas.height)
                 balls.push(ball)
                 
                 
