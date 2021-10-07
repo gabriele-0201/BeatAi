@@ -109,4 +109,4 @@ class Ball:
                     return
     
     def __str__(self):
-        return 'nRow: ' + str(self.nRow) + 'nColumn: ' + str(self.nColumn) + 'initSide: ' + str(self.initSide); 
+        return 'x: ' + str(self.x) + ' y: ' + str(self.y) + ' side: ' + str(self.side); 

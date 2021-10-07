@@ -14,7 +14,7 @@ sideSquare = 10
 def moveObjects(walls, balls):
     for ball in balls:
         ball.move(walls)
-        #print(str(ball.x) + " - " + str(ball.y))
+        #print(str(ball))
 
 def createWallArray(map):
     walls = []
@@ -23,6 +23,9 @@ def createWallArray(map):
         for j in range(len(map[i])):
             if(map[i][j] == 2):
                 walls.append(Wall(i, j, sideSquare))
+                #print("Added wall")
+                #print("row: " + str(i))
+                #print("column: " + str(j))
     
     return walls
 
@@ -46,13 +49,13 @@ def jsonToBalls(strBalls, width, height):
         ball.side = jsonBall["side"]
 
         #have to update the x and y with the position of the moving balls
-        ball.x = jsonBall["x"]
-        ball.y = jsonBall["y"]
+        #ball.x = jsonBall["x"]
+        #ball.y = jsonBall["y"]
 
         balls.append(ball)
 
-    for ball, i in enumerate(balls):
-        print(str(i) + str(ball))
+    #for ball, i in enumerate(balls):
+    #    print(str(i) + str(ball))
 
     return balls
 
@@ -62,7 +65,7 @@ def jsonToBalls(strBalls, width, height):
 def eval_genomes(genomes, config):
     idClient = config.config_information
 
-    print("ID CLIENT: " + str(idClient), flush = True)
+    #("ID CLIENT: " + str(idClient), flush = True)
 
     client = Client.objects.get(idClient = idClient)
     

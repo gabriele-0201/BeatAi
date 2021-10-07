@@ -67,6 +67,7 @@ def startAiPlay(request):
         #load the array of balls
         balls = []
         ballsSring = request.POST.getlist("balls[]")
+        #print(ballsSring)
         for ballStr in ballsSring:
             ballJson = json.loads(ballStr)
             
@@ -74,6 +75,7 @@ def startAiPlay(request):
             
             ball.dir = ballJson['dir']
             ball.initSide = ballJson['initSide']
+            ball.side = ballJson['initSide']
 
             balls.append(ball)
 
