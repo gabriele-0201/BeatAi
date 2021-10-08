@@ -171,7 +171,7 @@ function positioning(clientX, clientY) {
             if (!playerPlaced && map[nRow][nColumn] == 0) {
                 map[nRow][nColumn] = 1
                 playerPlaced = true
-                player = new Player(nColumn, nRow)
+                player = new Player(nColumn, nRow, canvas.width, canvas.height)
             }
             
             break

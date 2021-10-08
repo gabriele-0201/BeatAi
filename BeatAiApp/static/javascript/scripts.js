@@ -484,11 +484,11 @@ window.onresize = function() {
         case modes.DEFAULT:
         case modes.CREATE:
         case modes.BALLS_SHOWING:
+
             break
         case modes.PLAY:
-            //debouncedResizeBalls(balls, canvas.width, canvas.height)
-            //debounce(resizeBalls(balls, canvas.width, canvas.height))    
             resizeBalls(balls, canvas.width, canvas.height)
+            player.resize(canvas.width, canvas.height)
             break
         case modes.AI:
             
@@ -540,7 +540,7 @@ function restartGame(resizing = false) {
     })
 }
 
-function Player(nColumn, nRow) {
+function Player(nColumn, nRow, width, height) {
     this.nColumn = nColumn;
     this.nRow = nRow;
 
@@ -555,6 +555,16 @@ function Player(nColumn, nRow) {
     this.right = false;
 
     this.lines = new Lines();
+
+    this.width = width
+    this.height = height
+
+    this.resize = function(width, height) {
+        this.x = Math.floor((this.x * width) / this.width);
+        this.width = width 
+        this.y = Math.floor((this.y * height) / this.height);
+        this.height = height 
+    }
 
     this.move = function(walls) {
 
