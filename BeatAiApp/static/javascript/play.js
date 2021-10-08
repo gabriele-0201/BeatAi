@@ -99,6 +99,7 @@ function resizeBalls (balls, width, height) {
     })
 }
 
+/*
 function debounce(func, timeout = 1000){
     let timer;
     return (...args) => {
@@ -108,6 +109,7 @@ function debounce(func, timeout = 1000){
 }
 
 const debouncedResizeBalls = debounce(resizeBalls)
+*/
 
 function checkKeyDown(e) {
 

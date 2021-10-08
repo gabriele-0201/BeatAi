@@ -143,6 +143,11 @@ img = new Image()
 img.src = "/static/img/ball.svg"
 images.set('ball', img)
 
+//Resizing variables
+let isResizing = false;
+let resizePlay;
+let resizeTimeout = 400;
+
 let secondsPassed;
 let oldTimeStamp;
 let fps;
@@ -155,57 +160,58 @@ function gameLoop(timeStamp) {
     // Calculate fps
     fps = Math.round(1 / secondsPassed);
 
-    // console.log(fps)
+    if(!isResizing) {
+        switch(mode) {
+            case modes.BALLS_SHOWING:
 
-    switch(mode) {
-        case modes.BALLS_SHOWING:
-
-            moveObjects(walls, balls)
-
-            break
-        case modes.PLAY:
-
-            if(player !== null){ //I have to move this to the initual button to generalize the condition
-                player.move(walls)
                 moveObjects(walls, balls)
-                checkCollision()
-            }
-            break
-        case modes.AI:
-        case modes.AI_LOADING:
 
-            if(genOutputs.length > genToShow) {
-                //console.log(genOutputs.length + " - " + genToShow)
-                if(!winAi){
-                    aiPlay();
+                break
+            case modes.PLAY:
+
+                if(player !== null){ //I have to move this to the initual button to generalize the condition
+                    player.move(walls)
+                    moveObjects(walls, balls)
+                    checkCollision()
                 }
+                break
+            case modes.AI:
+            case modes.AI_LOADING:
 
-                if(incomingWin){
-                    winAi = checkWinAI(players)
-                    if(winAi){
-                        incomingWin = false
-                        endComunicationAi()
+                if(genOutputs.length > genToShow) {
+                    //console.log(genOutputs.length + " - " + genToShow)
+                    if(!winAi){
+                        aiPlay();
+                    }
+
+                    if(incomingWin){
+                        winAi = checkWinAI(players)
+                        if(winAi){
+                            incomingWin = false
+                            endComunicationAi()
+                        }
                     }
                 }
-            }
 
-            //incomingWin and winAi will stop asking new generation if somewin
-            if(mode !== modes.DEFAULT && !incomingWin && !winAi && genLoading < genToLoad){
-                console.log("Gen Loading" + genLoading)
-                console.log("Gen to Load " + genToLoad)
-                console.log("richiesta di una nuova generazione")
-                requestGeneration();
-                genLoading++;
-            }
-            break
+                //incomingWin and winAi will stop asking new generation if somewin
+                if(mode !== modes.DEFAULT && !incomingWin && !winAi && genLoading < genToLoad){
+                    console.log("Gen Loading" + genLoading)
+                    console.log("Gen to Load " + genToLoad)
+                    console.log("richiesta di una nuova generazione")
+                    requestGeneration();
+                    genLoading++;
+                }
+                break
+        }
+
+        draw()
     }
-
-    draw()
 
     window.requestAnimationFrame(gameLoop);
 }
 
-function drawGrid() {
+//The calc of the sideSquare is requested when resizing so I have to NOT draw the lines in this case
+function drawGrid(showGrid) {
 
     var w = gameDiv.clientWidth
     var h = gameDiv.clientHeight
@@ -371,7 +377,7 @@ function drawMap() {
 function draw() {
     ctx.clearRect(0,0, canvas.width, canvas.height)
 
-    drawGrid()
+    drawGrid(showGrid)
     
     drawMap()
 
@@ -487,8 +493,17 @@ window.onresize = function() {
 
             break
         case modes.PLAY:
-            resizeBalls(balls, canvas.width, canvas.height)
-            player.resize(canvas.width, canvas.height)
+            clearTimeout(resizePlay)
+            isResizing = true
+            resizePlay = setTimeout(function () {
+                drawGrid(false) //I need only the new value and not the lines for now
+                //The update of the speed in the objects is inside the move functions
+                resizeBalls(balls, canvas.width, canvas.height)
+                player.resize(canvas.width, canvas.height)
+                //finishing resizing I can restart to draw and calculate all the stuff
+                isResizing = false
+                console.log("RESIZED")
+            }, resizeTimeout)
             break
         case modes.AI:
             
@@ -560,13 +575,18 @@ function Player(nColumn, nRow, width, height) {
     this.height = height
 
     this.resize = function(width, height) {
-        this.x = Math.floor((this.x * width) / this.width);
+        //newX = ((this.x * width) / this.width)
+        //restX = ((this.x * width) / this.width) % this.speed
+        this.x = ((this.x * width) / this.width);
         this.width = width 
-        this.y = Math.floor((this.y * height) / this.height);
+        this.y = ((this.y * height) / this.height);
         this.height = height 
     }
 
     this.move = function(walls) {
+
+        //Have to update the speed in the case there is some resize that change the value of sideSquare
+        this.speed = sideSquare / 10;
 
         if (this.up){
             this.y -= this.speed
@@ -799,6 +819,9 @@ function Ball(nRow, nColumn, width, height) {
     }
 
     this.move = function(walls) {
+
+        this.speed = sideSquare / 8
+
         switch(this.dir) {
             case "horizontal":
 
