@@ -90,27 +90,6 @@ function checkCollision() {
     }
 }
 
-function resizeBalls (balls, width, height) {
-    balls.forEach( function(ball) {
-        ball.x = Math.floor((ball.x * width) / ball.width);
-        ball.width = width 
-        ball.y = Math.floor((ball.y * height) / ball.height);
-        ball.height = height 
-    })
-}
-
-/*
-function debounce(func, timeout = 1000){
-    let timer;
-    return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => { func.apply(this, args); }, timeout);
-    };
-}
-
-const debouncedResizeBalls = debounce(resizeBalls)
-*/
-
 function checkKeyDown(e) {
 
     e = e || window.event;

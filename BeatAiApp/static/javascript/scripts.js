@@ -486,34 +486,43 @@ window.onload = function() {
 //To fix the resize when AI PLAY
 window.onresize = function() {
     editIncLean()
+    clearTimeout(resizePlay)
+    isResizing = true
     switch(mode) {
         case modes.DEFAULT:
         case modes.CREATE:
         case modes.BALLS_SHOWING:
-
-            break
         case modes.PLAY:
-            clearTimeout(resizePlay)
-            isResizing = true
-            resizePlay = setTimeout(function () {
-                drawGrid(false) //I need only the new value and not the lines for now
-                //The update of the speed in the objects is inside the move functions
-                resizeBalls(balls, canvas.width, canvas.height)
-                player.resize(canvas.width, canvas.height)
-                //finishing resizing I can restart to draw and calculate all the stuff
-                isResizing = false
-                console.log("RESIZED")
-            }, resizeTimeout)
+            resizePlay = setTimeout(resizeObjects, resizeTimeout)
             break
         case modes.AI:
-            
-            break
         case modes.AI_LOADING:
-
+            resizePlay = setTimeout(resizeObjects(ai = true), resizeTimeout)
             break
     }
+}
 
-    //restartGame(resizing = true)
+function resizeObjects(ai = false) {
+    drawGrid(false) //I need only the new value and not the lines for now
+    //The update of the speed in the objects is inside the move functions
+    resizeBallWalls(balls, canvas.width, canvas.height, sideSquare)
+    if(end !== null)
+        end.resize(sideSquare)
+    if(!ai)
+        if(player !== null)
+            player.resize(canvas.width, canvas.height)
+    //finishing resizing I can restart to draw and calculate all the stuff
+    isResizing = false
+}
+
+function resizeBallWalls (balls, width, height, sideSquare) {
+    balls.forEach( function(ball) {
+        ball.resize(width, height)
+    })
+
+    walls.forEach( function(wall) {
+        wall.resize(sideSquare)
+    })
 }
 
 
@@ -536,22 +545,18 @@ function restartGame(resizing = false) {
         }
 
         if(player !== null) {
-            player.x = player.nColumn * sideSquare
-            player.y = player.nRow * sideSquare
+            player.restart(sideSquare)
         }
         
         if(end !== null) {
-            end.x = end.nColumn * sideSquare
-            end.y = end.nRow * sideSquare
+            end.restart(sideSquare)
         }
 
         win = false        
     }
 
     balls.forEach(ball => {
-        ball.side = ball.initSide
-        ball.x = ball.startX
-        ball.y = ball.startY
+        ball.restartBall(sideSquare)
     })
 }
 
@@ -575,12 +580,15 @@ function Player(nColumn, nRow, width, height) {
     this.height = height
 
     this.resize = function(width, height) {
-        //newX = ((this.x * width) / this.width)
-        //restX = ((this.x * width) / this.width) % this.speed
         this.x = ((this.x * width) / this.width);
         this.width = width 
         this.y = ((this.y * height) / this.height);
         this.height = height 
+    }
+
+    this.restart = function() {
+        this.x = this.nColumn * sideSquare
+        this.y = this.nRow * sideSquare
     }
 
     this.move = function(walls) {
@@ -789,6 +797,11 @@ function Wall(nRow, nColumn) {
     this.playerStopDown = false
     this.playerStopLeft = false
     this.playerStopRight = false
+
+    this.resize = function(sideSquare) {
+        this.x = this.nColumn * sideSquare
+        this.y = this.nRow * sideSquare
+    }
 }
 
 //Have to store also width and height to able the resize to resize the x and y of the balls
@@ -799,8 +812,8 @@ function Ball(nRow, nColumn, width, height) {
     this.x = this.nColumn * sideSquare
     this.y = this.nRow * sideSquare
 
-    this.startX = this.x
-    this.startY = this.y
+    //this.startX = this.x
+    //this.startY = this.y
 
     this.dir = "horizontal" // or vertical
     this.speed = sideSquare / 8
@@ -816,6 +829,27 @@ function Ball(nRow, nColumn, width, height) {
 
     this.getNowRow = function() {
         return Math.floor(this.y / sideSquare)
+    }
+
+    this.resize = function(width, height) {
+        switch(this.dir) {
+            case "horizontal":
+                this.x = ((this.x * width) / this.width);
+                this.width = width 
+                this.y = this.nRow * sideSquare
+                break
+            case "vertical":
+                this.x = this.nColumn * sideSquare
+                this.y = ((this.y * height) / this.height);
+                this.height = height
+                break
+        }
+    }
+
+    this.restartBall = function(sideSquare) {
+        this.side = this.initSide
+        this.x = this.nColumn * sideSquare
+        this.y = this.nRow * sideSquare
     }
 
     this.move = function(walls) {
@@ -909,6 +943,16 @@ function End(nRow, nColumn) {
 
     this.x = this.nColumn * sideSquare
     this.y = this.nRow * sideSquare
+
+    this.resize = function(sideSquare) {
+        this.x = this.nColumn * sideSquare
+        this.y = this.nRow * sideSquare
+    }
+
+    this.restart = function() {
+        this.x = this.nColumn * sideSquare
+        this.y = this.nRow * sideSquare
+    }
 }
 
 function findElement(array, nRow, nColumn) {

@@ -83,7 +83,6 @@ addEventListener('mousedown', event => {
         if (event.clientY > (pTop + navsContainer.clientHeight) && event.clientY < (pTop + navsContainer.clientHeight + canvas.height)){
             if (selectedItem != ""){
                 mouseDown = true
-            console.log("iN HERE")
             }
         }
     }
@@ -92,7 +91,6 @@ addEventListener('mousedown', event => {
 addEventListener('mouseup', event => {
     if (selectedItem != ""){
         mouseDown = false
-        console.log("OUT HERE")
     }
 })
 
@@ -255,7 +253,7 @@ function modifing(clientX, clientY) {
                 pLeft = parseInt(gameDiv.style.paddingLeft.substring(0,numbs))
                 numbs = gameDiv.style.paddingTop.length
                 pTop = parseInt(gameDiv.style.paddingTop.substring(0,numbs))
-                ableModifier(selectedBall.startX + (sideSquare / 2) + pLeft, selectedBall.startY + (sideSquare / 2) + pTop)
+                ableModifier(selectedBall.x + (sideSquare / 2) + pLeft, selectedBall.y + (sideSquare / 2) + pTop)
             }
             break
         default:
