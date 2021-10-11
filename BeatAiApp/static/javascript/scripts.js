@@ -146,7 +146,7 @@ images.set('ball', img)
 //Resizing variables
 let isResizing = false;
 let resizePlay;
-let resizeTimeout = 400;
+let resizeTimeout = 300;
 
 let secondsPassed;
 let oldTimeStamp;
@@ -505,7 +505,7 @@ window.onresize = function() {
 function resizeObjects(ai = false) {
     drawGrid(false) //I need only the new value and not the lines for now
     //The update of the speed in the objects is inside the move functions
-    resizeBallWalls(balls, canvas.width, canvas.height, sideSquare)
+    resizeBallsWalls(balls, walls, canvas.width, canvas.height, sideSquare)
     if(end !== null)
         end.resize(sideSquare)
     if(!ai)
@@ -513,11 +513,12 @@ function resizeObjects(ai = false) {
             player.resize(canvas.width, canvas.height)
     //finishing resizing I can restart to draw and calculate all the stuff
     isResizing = false
+    //console.log("sideSquare: " + sideSquare + " xBall: " + balls[0].x + " yBall: " + balls[0].y)
 }
 
-function resizeBallWalls (balls, width, height, sideSquare) {
+function resizeBallsWalls (balls, walls, width, height, sideSquare) {
     balls.forEach( function(ball) {
-        ball.resize(width, height)
+        ball.resize(width, height, sideSquare)
     })
 
     walls.forEach( function(wall) {
@@ -831,7 +832,7 @@ function Ball(nRow, nColumn, width, height) {
         return Math.floor(this.y / sideSquare)
     }
 
-    this.resize = function(width, height) {
+    this.resize = function(width, height, sideSquare) {
         switch(this.dir) {
             case "horizontal":
                 this.x = ((this.x * width) / this.width);
