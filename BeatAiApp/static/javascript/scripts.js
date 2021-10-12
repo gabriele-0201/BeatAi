@@ -503,6 +503,15 @@ window.onresize = function() {
 }
 
 function resizeObjects(ai = false) {
+
+    //Remove the modifier if is on
+    if(selectedBall !== null){
+        selectedBall.dir = "horizontal"
+        selectedBall.initSide = "left"
+        selectedBall.side = "left"
+        disableModifier()
+    }
+
     drawGrid(false) //I need only the new value and not the lines for now
     //The update of the speed in the objects is inside the move functions
     resizeBallsWalls(balls, walls, canvas.width, canvas.height, sideSquare)
@@ -513,7 +522,8 @@ function resizeObjects(ai = false) {
             player.resize(canvas.width, canvas.height)
     //finishing resizing I can restart to draw and calculate all the stuff
     isResizing = false
-    //console.log("sideSquare: " + sideSquare + " xBall: " + balls[0].x + " yBall: " + balls[0].y)
+    
+    console.log("sideSquare Resized: " + sideSquare /*+ " xBall: " + balls[0].x + " yBall: " + balls[0].y*/)
 }
 
 function resizeBallsWalls (balls, walls, width, height, sideSquare) {

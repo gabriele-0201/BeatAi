@@ -2,6 +2,7 @@ var modImg = document.getElementById("modifierImage") //modifierImage element
 if (modImg.addEventListener){
     modImg.addEventListener("click", function() {
         selectedItem = 'modifier'
+        console.log("MODIFIER SELECTED")
     })
 }
 
@@ -240,6 +241,10 @@ function modifing(clientX, clientY) {
 
     nColumn = Math.floor(x / sideSquare)
     nRow = Math.floor(y / sideSquare)
+
+    console.log("sideSquare: " + sideSquare)
+    console.log("nColumn: " + nColumn)
+    console.log("nRow: " + nRow)
 
 
     switch(map[nRow][nColumn]) {
