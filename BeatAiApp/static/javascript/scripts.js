@@ -219,14 +219,13 @@ function gameLoop(timeStamp) {
     window.requestAnimationFrame(gameLoop);
 }
 
-//The calc of the sideSquare is requested when resizing so I have to NOT draw the lines in this case
-function drawGrid(showGrid) {
-
+function resizeGrid() {
     var w = gameDiv.clientWidth
     var h = gameDiv.clientHeight
 
     var possibleHeight = h - minPadding 
     sideSquare = Math.floor(possibleHeight / rows)
+    console.log("Updated sideSquare with Height");
 
     var rest = possibleHeight % rows
 
@@ -234,6 +233,7 @@ function drawGrid(showGrid) {
 
         possibleWidth = w - minPadding
         sideSquare = Math.floor(possibleWidth / columns)
+        console.log("Updated sideSquare with Width");
 
         rest = possibleWidth % columns
         
@@ -258,7 +258,10 @@ function drawGrid(showGrid) {
         gameDiv.style.paddingTop = String((minPadding + rest) / 2) + "px"
         gameDiv.style.paddingBottom = String((minPadding + rest) / 2) + "px"
     }
-    if(showGrid) {
+}
+
+function drawGrid() {
+    //if(showGrid) {
         for(var i = 1; i < rows; i++) {
             drawLine([0, sideSquare * i], [canvas.width, sideSquare * i], '#898989', 1)
         }
@@ -266,7 +269,7 @@ function drawGrid(showGrid) {
         for(var j = 1; j < columns; j++) {
             drawLine([sideSquare * j, 0], [sideSquare * j, canvas.height], '#898989', 1)
         }
-    }
+    //}
 }
 
 function drawLine(begin, end, stroke = 'black', width = 1) {
@@ -386,7 +389,10 @@ function drawMap() {
 function draw() {
     ctx.clearRect(0,0, canvas.width, canvas.height)
 
-    drawGrid(showGrid)
+    //Draw the grid only if the toggle is set to show
+    if (showGrid)
+        drawGrid()
+    //drawGrid(showGrid)
     
     drawMap()
 
@@ -487,6 +493,7 @@ function editIncLean() {
 }
 
 window.onload = function() {
+    resizeGrid()
     window.requestAnimationFrame(gameLoop)
 
     editIncLean()
@@ -523,7 +530,7 @@ function resizeObjects(ai = false) {
         disableModifier()
     }
 
-    drawGrid(false) //I need only the new value and not the lines for now
+    resizeGrid() //I need only the new value and not the lines for now
     console.log("sideSquare Resized: " + sideSquare)
     //The update of the speed in the objects is inside the move functions
     resizeBallsWalls(balls, walls, canvas.width, canvas.height, sideSquare)
@@ -534,6 +541,7 @@ function resizeObjects(ai = false) {
             player.resize(canvas.width, canvas.height)
     //finishing resizing I can restart to draw and calculate all the stuff
     isResizing = false
+    console.log("finished resized");
     
 }
 
