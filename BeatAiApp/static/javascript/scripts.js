@@ -107,11 +107,20 @@ var selectedItem = ""
 var modPanelBool = false
 var selectedBall = null
 
-var numbs = gameDiv.style.paddingLeft.length
+/*var numbs = gameDiv.style.paddingLeft.length
 var pLeft = parseInt(gameDiv.style.paddingLeft.substring(0,numbs))
 numbs = gameDiv.style.paddingTop.length
 var pTop = parseInt(gameDiv.style.paddingTop.substring(0,numbs))
+*/
 
+var pLeft
+var pTop
+
+/*
+var paddings = getPaddingsLeftTop()
+var pLeft = paddings[0]
+var pTop = paddings[1]
+*/
 var xImg
 var yImg
 
@@ -164,14 +173,14 @@ function gameLoop(timeStamp) {
         switch(mode) {
             case modes.BALLS_SHOWING:
 
-                moveObjects(walls, balls)
+                moveObjects(walls, balls, sideSquare)
 
                 break
             case modes.PLAY:
 
                 if(player !== null){ //I have to move this to the initual button to generalize the condition
                     player.move(walls)
-                    moveObjects(walls, balls)
+                    moveObjects(walls, balls, sideSquare)
                     checkCollision()
                 }
                 break
@@ -493,6 +502,7 @@ window.onresize = function() {
         case modes.CREATE:
         case modes.BALLS_SHOWING:
         case modes.PLAY:
+        case modes.EXPLANATION:
             resizePlay = setTimeout(resizeObjects, resizeTimeout)
             break
         case modes.AI:
@@ -509,10 +519,12 @@ function resizeObjects(ai = false) {
         selectedBall.dir = "horizontal"
         selectedBall.initSide = "left"
         selectedBall.side = "left"
+        selectedBall = null
         disableModifier()
     }
 
     drawGrid(false) //I need only the new value and not the lines for now
+    console.log("sideSquare Resized: " + sideSquare)
     //The update of the speed in the objects is inside the move functions
     resizeBallsWalls(balls, walls, canvas.width, canvas.height, sideSquare)
     if(end !== null)
@@ -523,7 +535,6 @@ function resizeObjects(ai = false) {
     //finishing resizing I can restart to draw and calculate all the stuff
     isResizing = false
     
-    console.log("sideSquare Resized: " + sideSquare /*+ " xBall: " + balls[0].x + " yBall: " + balls[0].y*/)
 }
 
 function resizeBallsWalls (balls, walls, width, height, sideSquare) {
@@ -537,9 +548,9 @@ function resizeBallsWalls (balls, walls, width, height, sideSquare) {
 }
 
 
-function moveObjects(walls, balls) {
+function moveObjects(walls, balls, sideSquare) {
     balls.forEach(function(ball) {
-        ball.move(walls)
+        ball.move(walls, sideSquare)
     })
 }
 
@@ -810,6 +821,7 @@ function Wall(nRow, nColumn) {
     this.playerStopRight = false
 
     this.resize = function(sideSquare) {
+        console.log("SideSquare used inside wall resize: " + sideSquare)
         this.x = this.nColumn * sideSquare
         this.y = this.nRow * sideSquare
     }
@@ -822,10 +834,7 @@ function Ball(nRow, nColumn, width, height) {
 
     this.x = this.nColumn * sideSquare
     this.y = this.nRow * sideSquare
-
-    //this.startX = this.x
-    //this.startY = this.y
-
+    
     this.dir = "horizontal" // or vertical
     this.speed = sideSquare / 8
     this.initSide = "left"
@@ -855,6 +864,7 @@ function Ball(nRow, nColumn, width, height) {
                 this.height = height
                 break
         }
+        console.log("SideSquare used inside ball: " + sideSquare + " xBall: " + this.x + " yBall: " + this.y)
     }
 
     this.restartBall = function(sideSquare) {
@@ -863,9 +873,14 @@ function Ball(nRow, nColumn, width, height) {
         this.y = this.nRow * sideSquare
     }
 
-    this.move = function(walls) {
+    this.move = function(walls, sideSquare) {
 
+        //update the speed
         this.speed = sideSquare / 8
+        //seem to update inside here but don't know why
+        console.log("sideSqaure inside move: " + sideSquare)
+
+        //I don'y know why but there is an unespected sideSquare update
 
         switch(this.dir) {
             case "horizontal":

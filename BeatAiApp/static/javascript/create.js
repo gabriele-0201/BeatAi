@@ -158,6 +158,10 @@ function setxyImg(x, y, pLeft, pTop) {
 
 
 function positioning(clientX, clientY) {
+    paddings = getPaddingsLeftTop()
+    pLeft = paddings[0]
+    pTop = paddings[1]
+
     x = clientX - pLeft
     y = clientY - pTop - navsContainer.clientHeight
 
@@ -235,14 +239,21 @@ function positioning(clientX, clientY) {
 
 }
 
+//The solution I make is not really beautiful, I don't want that every time I resize while I'm in modifier mode the modifier direction of the ball will disappear
 function modifing(clientX, clientY) {
+    paddings = getPaddingsLeftTop()
+    pLeft = paddings[0]
+    pTop = paddings[1]
+
     x = clientX - pLeft
     y = clientY - pTop - navsContainer.clientHeight
+
+    console.log("sideSquarez: " + sideSquare)
 
     nColumn = Math.floor(x / sideSquare)
     nRow = Math.floor(y / sideSquare)
 
-    console.log("sideSquare: " + sideSquare)
+    console.log("sideSquarez: " + sideSquare)
     console.log("nColumn: " + nColumn)
     console.log("nRow: " + nRow)
 
@@ -253,12 +264,11 @@ function modifing(clientX, clientY) {
                 var indexBall = findElement(balls, nRow, nColumn)
                 selectedBall = balls[indexBall]
                 
-                //ableModifier(clientX, clientY - navsContainer.clientHeight)
-                numbs = gameDiv.style.paddingLeft.length
-                pLeft = parseInt(gameDiv.style.paddingLeft.substring(0,numbs))
-                numbs = gameDiv.style.paddingTop.length
-                pTop = parseInt(gameDiv.style.paddingTop.substring(0,numbs))
-                ableModifier(selectedBall.x + (sideSquare / 2) + pLeft, selectedBall.y + (sideSquare / 2) + pTop)
+                //don't know why but if I use the x and y of the balls the modifier goes NOT on the right ball
+                //ableModifier(selectedBall.x + (sideSquare / 2) + pLeft, selectedBall.y + (sideSquare / 2) + pTop)
+                
+                //using the nRow and nColumn * sideSquare maybe I will solve this problem
+                ableModifier((nColumn * sideSquare) + (sideSquare / 2) + pLeft, (nRow * sideSquare) + (sideSquare / 2) + pTop)
             }
             break
         default:
