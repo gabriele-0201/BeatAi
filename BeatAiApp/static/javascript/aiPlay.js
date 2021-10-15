@@ -53,17 +53,17 @@ if(toggleLines.addEventListener) {
 var popNumber = document.getElementById("popNumber");
 popNumber.textContent = population
 
-var moreBtn = document.getElementById("moreBtn");
-if(moreBtn.addEventListener) {
-    moreBtn.addEventListener("mouseover", function() {
-        document.getElementById("morePath").classList.toggle("popPathAnimation");
+var morePopBtn = document.getElementById("morePopBtn");
+if(morePopBtn.addEventListener) {
+    morePopBtn.addEventListener("mouseover", function() {
+        document.getElementById("morePopPath").classList.toggle("popGenPathAnimation");
     })   
 
-    moreBtn.addEventListener("mouseout", function() {
-        document.getElementById("morePath").classList.toggle("popPathAnimation");
+    morePopBtn.addEventListener("mouseout", function() {
+        document.getElementById("morePopPath").classList.toggle("popGenPathAnimation");
     })   
 
-    moreBtn.addEventListener("click", function() {
+    morePopBtn.addEventListener("click", function() {
         population += 5
         
         if (population > 200)
@@ -74,23 +74,54 @@ if(moreBtn.addEventListener) {
     })
 }
 
-var lessBtn = document.getElementById("lessBtn");
-if(lessBtn.addEventListener) {
-    lessBtn.addEventListener("mouseover", function() {
-        document.getElementById("lessPath").classList.toggle("popPathAnimation");
+var lessPopBtn = document.getElementById("lessPopBtn");
+if(lessPopBtn.addEventListener) {
+    lessPopBtn.addEventListener("mouseover", function() {
+        document.getElementById("lessPopPath").classList.toggle("popGenPathAnimation");
     })   
 
-    lessBtn.addEventListener("mouseout", function() {
-        document.getElementById("lessPath").classList.toggle("popPathAnimation");
+    lessPopBtn.addEventListener("mouseout", function() {
+        document.getElementById("lessPopPath").classList.toggle("popGenPathAnimation");
     })   
 
-    lessBtn.addEventListener("click", function() {
+    lessPopBtn.addEventListener("click", function() {
         population -= 5
 
         if (population < 5)
             population = 5
 
         popNumber.textContent = population
+    })
+}
+
+var moreGenBtn = document.getElementById("moreGenBtn");
+if(moreGenBtn.addEventListener) {
+    moreGenBtn.addEventListener("mouseover", function() {
+        document.getElementById("moreGenPath").classList.toggle("popGenPathAnimation");
+    })   
+
+    moreGenBtn.addEventListener("mouseout", function() {
+        document.getElementById("moreGenPath").classList.toggle("popGenPathAnimation");
+    })   
+
+    moreGenBtn.addEventListener("click", function() {
+        
+
+    })
+}
+
+var lessGenBtn = document.getElementById("lessGenBtn");
+if(lessGenBtn.addEventListener) {
+    lessGenBtn.addEventListener("mouseover", function() {
+        document.getElementById("lessGenPath").classList.toggle("popGenPathAnimation");
+    })   
+
+    lessGenBtn.addEventListener("mouseout", function() {
+        document.getElementById("lessGenPath").classList.toggle("popGenPathAnimation");
+    })   
+
+    lessGenBtn.addEventListener("click", function() {
+        
     })
 }
 
@@ -162,7 +193,7 @@ function endComunicationAi() {
 
     mode = modes.DEFAULT
     setLoadingIcon(false)
-    restartGame()
+    //restartGame()
     //incomingWin = false
     winAi = false
     winGeneration = -1
@@ -195,6 +226,10 @@ function startComunicationAi() {
     //start the AI only if the mode is to default - avoid the double clicking
     if(mode !== modes.DEFAULT)
         return
+
+
+    //Be sure to restart the game
+    restartGame();
 
     //Creating the initiale message to start the AI play
     var ballsString = []

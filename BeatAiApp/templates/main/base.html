@@ -104,23 +104,23 @@
                     <nav>
                         <ul class = "navList">
                             <li>
-                                <div id = "popContainer">
+                                <div id = "popGenContainer">
 
                                     <div id = "popNumberContainer">
                                         <p id = "popNumber" ></p>
                                     </div>
 
-                                    <div id = "popBtnContainer">
-                                        <svg class = "popBtn" id = "moreBtn" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <div id = "popGenBtnContainer">
+                                        <svg class = "popGenBtn" id = "morePopBtn" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <circle cx="250" cy="250" r="250" fill="#898989"/>
                                             <circle cx="250" cy="250" r="225" fill="#2F2F2F"/>
-                                            <path class = "popPath" id = "morePath" d="M246 94V406M100 247H400" stroke="#898989"/>
+                                            <path class = "popGenPath" id = "morePopPath" d="M246 94V406M100 247H400" stroke="#898989"/>
                                         </svg>
                                             
-                                        <svg class = "popBtn" id = "lessBtn" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class = "popGenBtn" id = "lessPopBtn" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <circle cx="250" cy="250" r="250" fill="#898989"/>
                                             <circle cx="250" cy="250" r="225" fill="#2F2F2F"/>
-                                            <path class = "popPath" id = "lessPath" d="M100 247H400" stroke="#898989"/>
+                                            <path class = "popGenPath" id = "lessPopPath" d="M100 247H400" stroke="#898989"/>
                                         </svg>
                                     </div>
                                 </div>
@@ -152,8 +152,37 @@
                                 <img src = "{% static 'img/play.svg' %}" draggable="false" alt = "Play">
                                 <p>Play</p>
                             </li>
-                            <li> 
+                            <!--<li> 
                                 <p class = "headerCounter" id = "generationCount">0</p>
+                                <p id = "genTitle">Generation</p>
+                            </li>-->
+                            <li>
+                                <div id = "popGenContainer">
+
+                                    <div id = "genNumberContainer">
+                                        <p class = "headerCounter" id = "generationCount">0</p>
+                                    </div>
+
+                                    <div id = "popGenBtnContainer">
+                                        <svg class = "popGenBtn" id = "moreGenBtn" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="250" cy="250" r="250" fill="#898989"/>
+                                            <circle cx="250" cy="250" r="225" fill="#2F2F2F"/>
+                                            <path class = "popGenPath" id = "moreGenPath" d="M246 94V406M100 247H400" stroke="#898989"/>
+                                        </svg>
+                                            
+                                        <svg class = "popGenBtn" id = "lessGenBtn" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="250" cy="250" r="250" fill="#898989"/>
+                                            <circle cx="250" cy="250" r="225" fill="#2F2F2F"/>
+                                            <path class = "popGenPath" id = "lessGenPath" d="M100 247H400" stroke="#898989"/>
+                                        </svg>
+
+                                        <svg class = "popGenBtn" id = "reviewBtn" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="250" cy="250" r="250" fill="#898989"/>
+                                            <circle cx="250" cy="250" r="225" fill="#2F2F2F"/>
+                                            <path class = "popGenPath" id = "reviewPath" stroke="#898989"/>
+                                        </svg>
+                                    </div>
+                                </div>
                                 <p id = "genTitle">Generation</p>
                             </li>
 

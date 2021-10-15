@@ -327,7 +327,7 @@ canvas {
     }
 }
 
-#popContainer {
+#popGenContainer {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -343,7 +343,7 @@ canvas {
     display: inline;
 }
 
-#popBtnContainer {
+#popGenBtnContainer {
     display: flex;
     align-items: center;
 
@@ -351,17 +351,17 @@ canvas {
     gap: clamp(5px, 0.3em, 10px);
 }
 
-.popBtn {
+.popGenBtn {
     height: clamp(1em, 3vh, 2.5em);
     /*padding-left: 0.5em;*/
 }
 
-.popPath {
+.popGenPath {
     stroke: #898989;
     stroke-width: 30;
 }
 
-.popPathAnimation {
+.popGenPathAnimation {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
     animation: totalDash 1.5s linear forwards;
@@ -468,6 +468,8 @@ canvas {
 .headerCounter {
     font-size: clamp(1.5em, 3vh, 2.5em);
     margin: 0 !important;
+    color: #898989 !important;
+    display: inline;
 }
 
 .smallAndTurnDisp {
@@ -570,6 +572,9 @@ canvas {
     stroke-dashoffset: 1000;
     animation: totalDash 1.5s linear forwards;
 }
+
+
+
 
 /* 
 Device = Low Resolution Tablets, Mobiles (Landscape)
