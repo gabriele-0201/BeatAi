@@ -152,7 +152,7 @@ function startAiPlayLevel() {
 
 function endAiPlayLevel() {
     mode = modes.DEFAULT
-    incomingWin = false
+    //incomingWin = false
     winAi = false    
     restartGame()
     removeWin(ai = true)
@@ -163,8 +163,9 @@ function endComunicationAi() {
     mode = modes.DEFAULT
     setLoadingIcon(false)
     restartGame()
-    incomingWin = false
+    //incomingWin = false
     winAi = false
+    winGeneration = -1
 
     genToLoad = 0
     genToShow = 0
@@ -237,6 +238,7 @@ function startComunicationAi() {
     })
 }
 
+//ADD the function the set winAi at the and of the last generation (how make visible that a generation win? using a numberGenerationWin to check every time update da request generation)
 function aiPlay() {
 
     if(movement == 0){
@@ -280,15 +282,23 @@ function aiPlay() {
     if(players.length <= 0){
         //console.log("QUI NON DOVREBBE ENTRARE MAI MA PERCHE' CAZZO NON LO FA?")
         movement = 0
-        genToShow++;
 
-        //update the write
-        document.getElementById("generationCount").textContent = genToShow
-        mode = modes.AI_LOADING
-        
-        if(!winAi){
+        if (winGeneration !== genToShow){
+            genToShow++;
+
+            //update the write
+            document.getElementById("generationCount").textContent = genToShow
+            mode = modes.AI_LOADING
             setLoadingIcon(true)
+            
+        } else {
+            winAi = true
+            setWin(ai=true)
         }
+    
+        //if(!winAi){
+            //setLoadingIcon(true)
+        //}
 
     } else {
         movement++;
@@ -322,9 +332,12 @@ function requestGeneration() {
                 //to initialize
 
                 if(response.win === true){
-                    incomingWin = true
+                    //incomingWin = true
+                    winGeneration = genToLoad
                     console.log("This generation win: " + genToLoad)
                     genToLoad = 0
+                    //NOT GOOD HERE, IF I CALL THIS FUNCTION IT WILL DELETE ALL THE STUFF USEFULL FOR THE REST OF THE PROGRAM
+                    //endComunicationAi()
                 } else {
                     genToLoad++;
                 }
@@ -335,7 +348,7 @@ function requestGeneration() {
 
                 //console.log("Lughezza dell'ouutput " + outputs[0].length)
                 //console.log("COntenuto: \n " + response.outputsGeneration)
-                console.log("COntenuto: \n " + outputs[0][0])
+                //console.log("COntenuto: \n " + outputs[0][0])
             }
             else {
                 console.log("arrived usefull generation")

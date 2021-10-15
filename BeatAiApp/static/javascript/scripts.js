@@ -107,20 +107,9 @@ var selectedItem = ""
 var modPanelBool = false
 var selectedBall = null
 
-/*var numbs = gameDiv.style.paddingLeft.length
-var pLeft = parseInt(gameDiv.style.paddingLeft.substring(0,numbs))
-numbs = gameDiv.style.paddingTop.length
-var pTop = parseInt(gameDiv.style.paddingTop.substring(0,numbs))
-*/
-
 var pLeft
 var pTop
 
-/*
-var paddings = getPaddingsLeftTop()
-var pLeft = paddings[0]
-var pTop = paddings[1]
-*/
 var xImg
 var yImg
 
@@ -132,6 +121,7 @@ var attemptCounter = 0
 var win = false //this variable is used for the signel player
 var incomingWin = false
 var winAi = false //This variable is specify for the winning of AI
+var winGeneration = -1
 
 var images = new Map()
 
@@ -191,19 +181,21 @@ function gameLoop(timeStamp) {
                     //console.log(genOutputs.length + " - " + genToShow)
                     if(!winAi){
                         aiPlay();
+                    } else {
+                        endComunicationAi();
                     }
 
-                    if(incomingWin){
-                        winAi = checkWinAI(players)
-                        if(winAi){
-                            incomingWin = false
-                            endComunicationAi()
-                        }
-                    }
+                    //if(incomingWin){
+                        //winAi = checkWinAI(players)
+                    //    if(winAi){
+                            //incomingWin = false
+                    //        endComunicationAi()
+                    //    }
+                    //}
                 }
 
                 //incomingWin and winAi will stop asking new generation if somewin
-                if(mode !== modes.DEFAULT && !incomingWin && !winAi && genLoading < genToLoad){
+                if(mode !== modes.DEFAULT /*&& !incomingWin*/ && !winAi && genLoading < genToLoad){
                     console.log("Gen Loading" + genLoading)
                     console.log("Gen to Load " + genToLoad)
                     console.log("richiesta di una nuova generazione")
