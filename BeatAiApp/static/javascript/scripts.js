@@ -43,7 +43,7 @@ function backToMainNav(type) {
             break;
         case 'ai':
             document.getElementById("subNavActive").setAttribute("id", "aiNavInactive");
-            if(mode !== modes.DEFAULT){
+            if(/*mode !== modes.DEFAULT*/ idClient !== -1){
                 endComunicationAi();
             }
             endAiPlayLevel();
@@ -177,13 +177,15 @@ function gameLoop(timeStamp) {
             case modes.AI:
             case modes.AI_LOADING:
 
-                if(genOutputs.length > genToShow) {
-                    //console.log(genOutputs.length + " - " + genToShow)
-                    if(!winAi){
+            //this loop is maybe to fast and break averithing
+
+                if(genOutputs.length > genToShow || genOutputs.length > changeGeneration) {
+                    
+                    //if(!winAi || genToShow != changeGeneration){
                         aiPlay();
-                    } else {
-                        endComunicationAi();
-                    }
+                    //} else {
+                    //    endComunicationAi();
+                    //}
 
                     //if(incomingWin){
                         //winAi = checkWinAI(players)

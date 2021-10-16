@@ -2,9 +2,11 @@
 var population = 30
 var genToLoad = 0
 var genToShow = 0
+var changeGeneration = 0
 var genOutputs = []
 var genLoading = -1
 var movement = 0
+var playersToSkip = []
 
 var showLines = false;
 var incLean = true;
@@ -94,6 +96,8 @@ if(lessPopBtn.addEventListener) {
     })
 }
 
+var genCount = document.getElementById("generationCount");
+
 var moreGenBtn = document.getElementById("moreGenBtn");
 if(moreGenBtn.addEventListener) {
     moreGenBtn.addEventListener("mouseover", function() {
@@ -106,6 +110,9 @@ if(moreGenBtn.addEventListener) {
 
     moreGenBtn.addEventListener("click", function() {
         
+        if (genOutputs.length > genToShow + 1 /*&& genOutputs.length > changeGeneration*/) {
+            changeGeneration = genToShow + 1;
+        }
 
     })
 }
@@ -122,6 +129,14 @@ if(lessGenBtn.addEventListener) {
 
     lessGenBtn.addEventListener("click", function() {
         
+        console.log("genToShow: " + genToShow);
+        if (genToShow > 0) {
+            changeGeneration = genToShow - 1;
+        }
+        console.log("chagneGeneration: " + changeGeneration);
+
+        console.log("genOutputs lenght: " + genOutputs.length)
+
     })
 }
 
@@ -184,26 +199,39 @@ function startAiPlayLevel() {
 function endAiPlayLevel() {
     mode = modes.DEFAULT
     //incomingWin = false
-    winAi = false    
+    winAi = false
+    
     restartGame()
     removeWin(ai = true)
-}
-
-function endComunicationAi() {
-
-    mode = modes.DEFAULT
-    setLoadingIcon(false)
-    //restartGame()
-    //incomingWin = false
-    winAi = false
-    winGeneration = -1
 
     genToLoad = 0
     genToShow = 0
+    changeGeneration = 0
     genOutputs = []
     genLoading = -1
     movement = 0
     players = []
+    winGeneration = -1
+
+    genCount.textContent = 0
+}
+
+function endComunicationAi() {
+
+    //mode = modes.DEFAULT
+    setLoadingIcon(false)
+    //restartGame()
+    //incomingWin = false
+    //winAi = false
+
+    //Here were the reset of the variables
+    /*genToLoad = 0
+    genToShow = 0
+    changeGeneration = 0
+    genOutputs = []
+    genLoading = -1
+    movement = 0
+    players = []*/
 
     var csrf = $("input[name=csrfmiddlewaretoken]").val()
 
@@ -218,15 +246,33 @@ function endComunicationAi() {
         },
         success: function(response) {
             console.log(response.value)
+            idClient = -1
         }
     })
 }
 
 function startComunicationAi() {
     //start the AI only if the mode is to default - avoid the double clicking
-    if(mode !== modes.DEFAULT)
+    //if(mode !== modes.DEFAULT)
+    if(idClient !== -1)
         return
+    else {
+        winAi = false
+    
+        restartGame()
+        removeWin(ai = true)
 
+        genToLoad = 0
+        genToShow = 0
+        changeGeneration = 0
+        genOutputs = []
+        genLoading = -1
+        movement = 0
+        players = []
+        winGeneration = -1
+
+        genCount.textContent = 0
+    }
 
     //Be sure to restart the game
     restartGame();
@@ -265,9 +311,19 @@ function startComunicationAi() {
             
             console.log(response.value)
             idClient = response.idClient
-            console.log(idClient)
+            console.log("id client: " + idClient)
             
             mode = modes.AI_LOADING
+
+            genToLoad = 0
+            genToShow = 0
+            changeGeneration = 0
+            genOutputs = []
+            genLoading = -1
+            movement = 0
+            players = []
+            winGeneration = -1
+
             setLoadingIcon(true)
         }
     })
@@ -275,6 +331,19 @@ function startComunicationAi() {
 
 //ADD the function the set winAi at the and of the last generation (how make visible that a generation win? using a numberGenerationWin to check every time update da request generation)
 function aiPlay() {
+    
+    if (changeGeneration != genToShow){
+        genToShow = changeGeneration
+        genCount.textContent = genToShow
+        winAi = false
+        removeWin(ai = true)
+        movement = 0
+        players.splice(0, player.length)
+        playersToSkip.splice(0, playersToSkip.length)
+    }
+
+    if(winAi)
+        return;
 
     if(movement == 0){
         for(var i = 0; i < genOutputs[genToShow].length; i++) {
@@ -288,17 +357,19 @@ function aiPlay() {
         setLoadingIcon(false)
     }
 
-    toRemove = []
+    //toRemove = []
 
     //console.log("Questa è la dimensione di tutti i movimetni dei giocatori (dovrebbe essere fissa a 30) " + genOutputs[genToShow].length + " - " + players.length)
 
     genOutputs[genToShow].forEach(function(outs, i){
 
-        //console.log(outs.length)
+        if(playersToSkip.includes(i))
+            return;
         
         // If the previous was the last movement I have to remove
         if(outs.length <= movement) {
-            toRemove.push(i)
+            //toRemove.push(i)
+            playersToSkip.push(i);
         } else {
             players[i].y = ((outs[movement][0]) * canvas.height) / (rows * 10)
             players[i].x = ((outs[movement][1]) * canvas.width) / (columns * 10)
@@ -309,38 +380,40 @@ function aiPlay() {
     moveObjects(walls, balls)
 
     //remove the player I have to remove
-    toRemove.forEach(index => {
-        genOutputs[genToShow].splice(index, 1)
-        players.splice(index, 1)
-    })
+    //toRemove.forEach(index => {
+        //genOutputs[genToShow].splice(index, 1)
+    //    playersToSkip.push(index);
+    //    players.splice(index, 1);
+    //})
 
-    if(players.length <= 0){
-        //console.log("QUI NON DOVREBBE ENTRARE MAI MA PERCHE' CAZZO NON LO FA?")
+    if(/*players.length <= 0*/ playersToSkip.length === genOutputs[genToShow].length){
+        
         movement = 0
+        players.splice(0, player.length)
+        playersToSkip.splice(0, playersToSkip.length)
+        
+        console.log("WinGeneration:  " + winGeneration)
 
         if (winGeneration !== genToShow){
             genToShow++;
+            changeGeneration = genToShow;
 
             //update the write
-            document.getElementById("generationCount").textContent = genToShow
+            genCount.textContent = genToShow
             mode = modes.AI_LOADING
             setLoadingIcon(true)
             
         } else {
-            winAi = true
-            setWin(ai=true)
+            winAi = true;
+            setWin(ai=true);
+            if(idClient != -1)
+                endComunicationAi();
         }
-    
-        //if(!winAi){
-            //setLoadingIcon(true)
-        //}
 
     } else {
         movement++;
     }
-
 }
-
 
 function requestGeneration() {
 
