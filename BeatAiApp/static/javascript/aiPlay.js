@@ -140,6 +140,29 @@ if(lessGenBtn.addEventListener) {
     })
 }
 
+var reviewGenBtn = document.getElementById("reviewGenBtn");
+if(reviewGenBtn.addEventListener) {
+    reviewGenBtn.addEventListener("mouseover", function() {
+        document.getElementById("reviewGenPath").classList.toggle("popGenPathAnimation");
+    })   
+
+    reviewGenBtn.addEventListener("mouseout", function() {
+        document.getElementById("reviewGenPath").classList.toggle("popGenPathAnimation");
+    })   
+
+    reviewGenBtn.addEventListener("click", function() {
+        
+        //if (genToShow > 0) {
+            changeGeneration = -2;
+        //}
+
+        console.log("genToShow: " + genToShow);
+        console.log("changeGeneration: " + changeGeneration);
+
+
+    })
+}
+
 function checkWinAI(players) {
     w = false
     players.forEach(player =>{
@@ -333,8 +356,14 @@ function startComunicationAi() {
 function aiPlay() {
     
     if (changeGeneration != genToShow){
-        genToShow = changeGeneration
-        genCount.textContent = genToShow
+
+        if (changeGeneration != -2) {
+            genToShow = changeGeneration
+            genCount.textContent = genToShow
+        } else {
+            changeGeneration = genToShow
+        }
+        
         winAi = false
         removeWin(ai = true)
         movement = 0

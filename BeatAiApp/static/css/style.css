@@ -367,6 +367,12 @@ canvas {
     animation: totalDash 1.5s linear forwards;
 }
 
+.popGenPathAnimationBackwords {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: -1000;
+    animation: totalDash 1.5s linear forwards;
+}
+
 .toggle {
     height: clamp(1em, 3vh, 2.5em);
 }
