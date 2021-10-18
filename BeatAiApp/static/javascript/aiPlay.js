@@ -110,7 +110,7 @@ if(moreGenBtn.addEventListener) {
 
     moreGenBtn.addEventListener("click", function() {
         
-        if (genOutputs.length > genToShow + 1 /*&& genOutputs.length > changeGeneration*/) {
+        if (genOutputs.length > genToShow + 1) {
             changeGeneration = genToShow + 1;
         }
 
@@ -377,6 +377,7 @@ function aiPlay() {
     if(movement == 0){
         for(var i = 0; i < genOutputs[genToShow].length; i++) {
             pl = new Player(player.nColumn, player.nRow)
+            pl.dead = false
             players.push(pl)
         }
         restartGame();
@@ -385,10 +386,6 @@ function aiPlay() {
         mode = modes.AI
         setLoadingIcon(false)
     }
-
-    //toRemove = []
-
-    //console.log("Questa è la dimensione di tutti i movimetni dei giocatori (dovrebbe essere fissa a 30) " + genOutputs[genToShow].length + " - " + players.length)
 
     genOutputs[genToShow].forEach(function(outs, i){
 
@@ -399,6 +396,7 @@ function aiPlay() {
         if(outs.length <= movement) {
             //toRemove.push(i)
             playersToSkip.push(i);
+            players[i].dead = true
         } else {
             players[i].y = ((outs[movement][0]) * canvas.height) / (rows * 10)
             players[i].x = ((outs[movement][1]) * canvas.width) / (columns * 10)
@@ -406,7 +404,7 @@ function aiPlay() {
 
     })
 
-    moveObjects(walls, balls)
+    moveObjects(walls, balls, sideSquare)
 
     //remove the player I have to remove
     //toRemove.forEach(index => {

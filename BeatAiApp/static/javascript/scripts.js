@@ -130,6 +130,9 @@ var img = new Image()
 img.src = "/static/img/player.svg"
 images.set('player', img)
 img = new Image()
+img.src = "/static/img/playerDead.svg"
+images.set('playerDead', img)
+img = new Image()
 img.src = "/static/img/fullWall.svg"
 images.set('fullWall', img)
 img = new Image()
@@ -173,6 +176,7 @@ function gameLoop(timeStamp) {
                     moveObjects(walls, balls, sideSquare)
                     checkCollision()
                 }
+                
                 break
             case modes.AI:
             case modes.AI_LOADING:
@@ -314,6 +318,8 @@ function drawMap() {
                             var indexBall = findElement(balls, i, j)
                             var ball = balls[indexBall]
 
+                            console.log("Ball x: " + ball.x + "Ball y: " + ball.y)
+
                             ctx.drawImage(images.get('ball'), ball.x, ball.y, sideSquare, sideSquare)
                             break
                     }    
@@ -335,9 +341,15 @@ function drawMap() {
             mesureLines()
         }
 
+        console.log("Status of the player, why is alweys deade??" + players[1].dead)
+
         players.forEach(player => {
 
-            ctx.drawImage(images.get('player'), player.x, player.y, sideSquare, sideSquare)
+            if (player.dead) {
+                ctx.drawImage(images.get('playerDead'), player.x, player.y, sideSquare, sideSquare)
+            } else {
+                ctx.drawImage(images.get('player'), player.x, player.y, sideSquare, sideSquare)
+            }
             
             //draw lines of player
             if(showLines){
@@ -602,6 +614,8 @@ function Player(nColumn, nRow, width, height) {
 
     this.width = width
     this.height = height
+
+    this.dead = false
 
     this.resize = function(width, height) {
         this.x = ((this.x * width) / this.width);
