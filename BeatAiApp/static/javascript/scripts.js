@@ -540,10 +540,17 @@ function resizeObjects(ai = false) {
     resizeBallsWalls(balls, walls, canvas.width, canvas.height, sideSquare)
     if(end !== null)
         end.resize(sideSquare)
-    if(!ai)
+    if(!ai){
         if(player !== null)
             player.resize(canvas.width, canvas.height)
-    //finishing resizing I can restart to draw and calculate all the stuff
+    } else {
+            player.resize(canvas.width, canvas.height)
+
+            players.forEach( player => {
+                player.resize(canvas.width, canvas.height)
+            })
+    }
+            //finishing resizing I can restart to draw and calculate all the stuff
     isResizing = false
     console.log("finished resized");
     

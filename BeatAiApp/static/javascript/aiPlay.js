@@ -367,14 +367,21 @@ function aiPlay() {
         winAi = false
         removeWin(ai = true)
         movement = 0
-        players.splice(0, player.length)
-        playersToSkip.splice(0, playersToSkip.length)
+        //players.splice(0, player.length)
+        //playersToSkip.splice(0, playersToSkip.length)
+        players = []
+        playersToSkip = []
+
     }
 
     if(winAi)
         return;
 
     if(movement == 0){
+        
+        players = []
+        playersToSkip = []
+
         for(var i = 0; i < genOutputs[genToShow].length; i++) {
             pl = new Player(player.nColumn, player.nRow, canvas.width, canvas.height)
             players.push(pl)
@@ -395,6 +402,7 @@ function aiPlay() {
         if(outs.length <= movement) {
             playersToSkip.push(i);
             players[i].dead = true
+            console.log("dead")
         } else {
             players[i].y = ((outs[movement][0]) * canvas.height) / (rows * 10)
             players[i].x = ((outs[movement][1]) * canvas.width) / (columns * 10)
@@ -407,8 +415,8 @@ function aiPlay() {
     if(playersToSkip.length === genOutputs[genToShow].length){
         
         movement = 0
-        players.splice(0, player.length)
-        playersToSkip.splice(0, playersToSkip.length)
+        //players.splice(0, player.length)
+        //playersToSkip.splice(0, playersToSkip.length)
         
         console.log("WinGeneration:  " + winGeneration)
 
