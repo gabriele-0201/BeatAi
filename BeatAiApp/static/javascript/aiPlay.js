@@ -376,8 +376,7 @@ function aiPlay() {
 
     if(movement == 0){
         for(var i = 0; i < genOutputs[genToShow].length; i++) {
-            pl = new Player(player.nColumn, player.nRow)
-            pl.dead = false
+            pl = new Player(player.nColumn, player.nRow, canvas.width, canvas.height)
             players.push(pl)
         }
         restartGame();
@@ -394,7 +393,6 @@ function aiPlay() {
         
         // If the previous was the last movement I have to remove
         if(outs.length <= movement) {
-            //toRemove.push(i)
             playersToSkip.push(i);
             players[i].dead = true
         } else {
@@ -406,14 +404,7 @@ function aiPlay() {
 
     moveObjects(walls, balls, sideSquare)
 
-    //remove the player I have to remove
-    //toRemove.forEach(index => {
-        //genOutputs[genToShow].splice(index, 1)
-    //    playersToSkip.push(index);
-    //    players.splice(index, 1);
-    //})
-
-    if(/*players.length <= 0*/ playersToSkip.length === genOutputs[genToShow].length){
+    if(playersToSkip.length === genOutputs[genToShow].length){
         
         movement = 0
         players.splice(0, player.length)

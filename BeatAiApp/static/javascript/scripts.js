@@ -341,8 +341,6 @@ function drawMap() {
             mesureLines()
         }
 
-        console.log("Status of the player, why is alweys deade??" + players[1].dead)
-
         players.forEach(player => {
 
             if (player.dead) {
@@ -604,6 +602,8 @@ function Player(nColumn, nRow, width, height) {
     this.y = nRow * sideSquare;
    
     this.speed = sideSquare / 10;
+
+    this.dead = false;
    
     this.up = false;
     this.down = false;
@@ -612,10 +612,8 @@ function Player(nColumn, nRow, width, height) {
 
     this.lines = new Lines();
 
-    this.width = width
-    this.height = height
-
-    this.dead = false
+    this.width = width;
+    this.height = height;
 
     this.resize = function(width, height) {
         this.x = ((this.x * width) / this.width);
