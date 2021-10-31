@@ -13,6 +13,8 @@ from .wall import Wall
 from .ball import Ball
 from .lines import Lines
 
+from FindPathDijkstra import dijkstra
+
 import threading
 import os
 import neat
@@ -61,6 +63,8 @@ def startAiPlay(request):
             width = width,
             map = map
         )
+
+        print(DijikistraPy(map))
 
         setPopulation(population, idClient)
 
