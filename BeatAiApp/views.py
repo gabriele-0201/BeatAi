@@ -12,8 +12,18 @@ from .player import Player
 from .wall import Wall
 from .ball import Ball
 from .lines import Lines
+'''
+def __bootstrap__():
+   global __bootstrap__, __loader__, __file__
+   import pkg_resources, imp
+   __file__ = pkg_resources.resource_filename(__name__,'dijkstraModule.cpython-39-x86_64-linux-gnu.so')
+   __loader__ = None; del __bootstrap__, __loader__
+   imp.load_dynamic(__name__,__file__)
+__bootstrap__()
+'''
 
-from FindPathDijkstra import dijkstra
+from BeatAiApp.dijkstraModule import dijkstra
+
 
 import threading
 import os
@@ -64,7 +74,7 @@ def startAiPlay(request):
             map = map
         )
 
-        print(DijikistraPy(map))
+        print(dijkstra(map))
 
         setPopulation(population, idClient)
 
