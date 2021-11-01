@@ -12,18 +12,8 @@ from .player import Player
 from .wall import Wall
 from .ball import Ball
 from .lines import Lines
-'''
-def __bootstrap__():
-   global __bootstrap__, __loader__, __file__
-   import pkg_resources, imp
-   __file__ = pkg_resources.resource_filename(__name__,'dijkstraModule.cpython-39-x86_64-linux-gnu.so')
-   __loader__ = None; del __bootstrap__, __loader__
-   imp.load_dynamic(__name__,__file__)
-__bootstrap__()
-'''
 
 from BeatAiApp.dijkstraModule import dijkstra
-
 
 import threading
 import os
@@ -56,27 +46,35 @@ def startAiPlay(request):
         #load the values form the arrived message
         map = json.loads(request.POST.get("map"))
         incLean = True if request.POST.get("incremental") == 'true' else False
+
+        # add this variable to the js 
+        #pathFind = True if request.POST.get("incremental") == 'true' else False
+        pathFind = True
+
         rows = int(request.POST.get("rows"))
         columns = int(request.POST.get("columns"))
         width = columns * sideSquare
         height = rows * sideSquare
         population = int(request.POST.get("population"))
 
+        lenghtMap = dijkstra(map)
+        print(dijkstra(map))
+
         #create a db object
         client = Client(
             idClient = idClient,
             population = population,
             incLean = incLean,
+            pathFind = pathFind,
             rows = rows,
             columns = columns,
             height = height,
             width = width,
-            map = map
+            map = map,
+            lenghtMap = lenghtMap
         )
 
-        print(dijkstra(map))
-
-        setPopulation(population, idClient)
+        setConfig(population, pathFind, idClient)
 
         #load the array of balls
         balls = []

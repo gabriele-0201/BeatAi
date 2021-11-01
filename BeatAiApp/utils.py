@@ -33,7 +33,7 @@ def setIdClient():
     return idClient
 
 #Write in the config file the population and the number of the client
-def setPopulation(pop, idClient):
+def setConfig(pop, findPath, idClient):
     config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/config-feedforward.txt')
 
     with open(config_path, 'r') as f:
@@ -41,7 +41,14 @@ def setPopulation(pop, idClient):
 
     data = data.replace('POPULATION_TO_BE_SET', str(pop))
     data = data.replace('CLIENT_ID_TO_BE_SET', str(idClient))
-
+    
+    if findPath:
+        #To be updated with thw raws and columns variables
+        matrixNumber = (15 * 30) + 10
+        data = data.replace('INPUTS_TO_BE_SET', str(matrixNumber))
+    else:
+        data = data.replace('INPUTS_TO_BE_SET', "12")
+   
     new_config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/clients/' + str(idClient) + '.txt')
 
     print(new_config_path)

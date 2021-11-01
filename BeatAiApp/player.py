@@ -3,7 +3,7 @@ import math
 from .lines import Lines
 class Player:
     
-    def __init__(self, nRowAndColumn, sideSquare, width, height, rows, columns):
+    def __init__(self, nRowAndColumn, sideSquare, width, height, rows, columns, distance = -1):
         self.sideSquare = sideSquare
         self.width = width
         self.height = height
@@ -25,6 +25,8 @@ class Player:
         self.right = False
         
         self.lines = Lines()
+
+        self.distance = distance
 
 
     def getNowColumn(self):

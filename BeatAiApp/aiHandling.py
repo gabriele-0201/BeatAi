@@ -74,6 +74,19 @@ def eval_genomes(genomes, config):
     players = []
 
     map = client.map
+    lenghtMap = client.lenghtMap
+    elementsInMap = 15 * 30
+    
+    lenghtArray = []
+    
+    for i in range(15):
+        for j in range(30):
+            lenghtArray.append(lenghtMap[i][j])
+
+    #append also 10 more elements for other inputs
+    for i in range(10):
+        lenghtArray.append(0)
+
     walls = createWallArray(map)
 
     stopped = False
@@ -129,9 +142,21 @@ def eval_genomes(genomes, config):
 
             #create the output
             #Now the outputs have to be an array of array (the interith array has only two values, the first Up/Down and the secondo Left/Right)
-
-            outputArray = nets[i].activate((players[i].lines.upLine, players[i].lines.downLine, players[i].lines.leftLine, players[i].lines.rightLine, players[i].lines.upRightLine, players[i].lines.upLeftLine, players[i].lines.downRightLine, players[i].lines.downLeftLine, players[i].x, players[i].y, client.endX, client.endY))
-
+            if not client.pathFind:
+                outputArray = nets[i].activate((players[i].lines.upLine, players[i].lines.downLine, players[i].lines.leftLine, players[i].lines.rightLine, players[i].lines.upRightLine, players[i].lines.upLeftLine, players[i].lines.downRightLine, players[i].lines.downLeftLine, players[i].x, players[i].y, client.endX, client.endY))
+            else:
+                lenghtArray[elementsInMap + 0] = players[i].lines.upLine
+                lenghtArray[elementsInMap + 1] = players[i].lines.downLine
+                lenghtArray[elementsInMap + 2] = players[i].lines.leftLine
+                lenghtArray[elementsInMap + 3] = players[i].lines.rightLine
+                lenghtArray[elementsInMap + 4] = players[i].lines.upRightLine
+                lenghtArray[elementsInMap + 5] = players[i].lines.upLeftLine
+                lenghtArray[elementsInMap + 6] = players[i].lines.downRightLine
+                lenghtArray[elementsInMap + 7] = players[i].lines.downLeftLine
+                lenghtArray[elementsInMap + 8] = players[i].x
+                lenghtArray[elementsInMap + 9] = players[i].y
+                outputArray = nets[i].activate(lenghtArray)
+            
             output = []
 
             if (outputArray[0] > 0.5):
@@ -189,15 +214,42 @@ def eval_genomes(genomes, config):
             #lower the fitness and remove the player who collide with the balls or other objects
             #to remove properly the objects I have to sort the indexes before use the array to remove them
 
-            #Remove fitness if the player is stall in a single place for too many time
+            #NOT WORK
+            #maybe it will not work, I have to pass the lenghtMap to the input of the neat
 
-            if(players[i].haveToDecrease(client.cicleToDecrease)):
+            #Create a method to manage the fitnessfunction knowing the dijkstra map
+            '''
+            if(client.pathFind):
+                nCol = math.floor((players[i].x + (players[i].sideSquare / 2)) / players[i].sideSquare)
+                nRow = math.floor((players[i].y + (players[i].sideSquare / 2)) / players[i].sideSquare)
+
+                #How can I memorize the old position?
+                if(players[i].distance == -1):
+                    players[i].distance = lenghtMap[nRow][nCol]
+                    print("change distance valie")
+                else:
+                    nowDistance = lenghtMap[nRow][nCol]
+
+                    if(nowDistance < players[i].distance):
+                        players[i].distance = nowDistance
+                        genome.fitness += 5
+
+            else:
+            '''
+            #add fitness to the player who is more near to the end
+            #if not client.pathFind:
+            nowDistance = getDistance(players[i], client.endX, client.endY)
+            
+            if(math.ceil(nowDistance) < math.floor(client.minDistance)):
+                genome.fitness += 10
+                client.minDistance = nowDistance
+            
+            #Remove fitness if the player is stall in a single place for too many time
+            if (players[i].haveToDecrease(client.cicleToDecrease)):
                 genome.fitness -= 2
-                #players[i].clearHistory()
-                #print("descrease to: " + str(i))
 
             if(checkCollisionAIS(players[i], balls)):
-                genome.fitness -= 50
+                genome.fitness -= 10
                 running = False
                 toRemove.append(i)
                 break
@@ -209,19 +261,13 @@ def eval_genomes(genomes, config):
                 break
 
             if(players[i].haveToRemove(client.cicleToRemove)):
-                genome.fitness -= 10
+                
+                if not client.pathFind:
+                    genome.fitness -= 10
+
                 running = False
                 toRemove.append(i)
                 break
-
-            #add fitness to the player who is more near to the end
-
-            nowDistance = getDistance(players[i], client.endX, client.endY)
-            #print(nowDistance)
-
-            if(math.ceil(nowDistance) < math.floor(client.minDistance)):
-                genome.fitness += 10
-                client.minDistance = nowDistance
 
             if(client.incLean):
                 movements = movements + 1
