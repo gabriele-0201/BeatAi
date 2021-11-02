@@ -58,7 +58,11 @@ def startAiPlay(request):
         population = int(request.POST.get("population"))
 
         lenghtMap = dijkstra(map)
-        print(dijkstra(map))
+        
+        for i in range(15):
+            for j in range(30):
+                print(str(lenghtMap[i][j]) + " ", end = '')
+            print("\n")
 
         #create a db object
         client = Client(

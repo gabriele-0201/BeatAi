@@ -22,8 +22,8 @@ class Client(models.Model):
     endX = models.IntegerField(blank=True, null=True)
     endY = models.IntegerField(blank=True, null=True)
     possibleMov = models.IntegerField(default=40)
-    cicleToRemove = models.IntegerField(default=30)
-    cicleToDecrease = models.IntegerField(default=90)
+    cicleToRemove = models.IntegerField(default=90)
+    cicleToDecrease = models.IntegerField(default=30)
 
 class Generation(models.Model):
     output = models.ForeignKey(Client, on_delete=models.CASCADE)

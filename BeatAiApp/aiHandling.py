@@ -218,7 +218,7 @@ def eval_genomes(genomes, config):
             #maybe it will not work, I have to pass the lenghtMap to the input of the neat
 
             #Create a method to manage the fitnessfunction knowing the dijkstra map
-            '''
+            
             if(client.pathFind):
                 nCol = math.floor((players[i].x + (players[i].sideSquare / 2)) / players[i].sideSquare)
                 nRow = math.floor((players[i].y + (players[i].sideSquare / 2)) / players[i].sideSquare)
@@ -226,25 +226,29 @@ def eval_genomes(genomes, config):
                 #How can I memorize the old position?
                 if(players[i].distance == -1):
                     players[i].distance = lenghtMap[nRow][nCol]
-                    print("change distance valie")
                 else:
                     nowDistance = lenghtMap[nRow][nCol]
+                    
+                    #print("Distance Player: " +str(players[i].distance))
+                    #print("Distance Now: " +str(nowDistance))
 
-                    if(nowDistance < players[i].distance):
+                    if nowDistance < players[i].distance:
                         players[i].distance = nowDistance
                         genome.fitness += 5
+                    elif nowDistance > players[i].distance:
+                        genome.fitness -= 20
 
             else:
-            '''
-            #add fitness to the player who is more near to the end
-            #if not client.pathFind:
-            nowDistance = getDistance(players[i], client.endX, client.endY)
+                #add fitness to the player who is more near to the end
+                #if not client.pathFind:
+                nowDistance = getDistance(players[i], client.endX, client.endY)
             
-            if(math.ceil(nowDistance) < math.floor(client.minDistance)):
-                genome.fitness += 10
-                client.minDistance = nowDistance
+                if(math.ceil(nowDistance) < math.floor(client.minDistance)):
+                    genome.fitness += 10
+                    client.minDistance = nowDistance
             
             #Remove fitness if the player is stall in a single place for too many time
+            #if (not client.pathFind and players[i].haveToDecrease(client.cicleToDecrease)):
             if (players[i].haveToDecrease(client.cicleToDecrease)):
                 genome.fitness -= 2
 
