@@ -34,16 +34,17 @@ if(stopAiBtn.addEventListener) {
 var toggleLines = document.getElementById("toggleLines");
 if(toggleLines.addEventListener) {
     toggleLines.addEventListener("click", function() {
-        document.getElementById("linesNo").classList.toggle("toggleVisible");
-        document.getElementById("linesYes").classList.toggle("toggleVisible");
+
+        document.getElementById("linesAiNo").classList.toggle("toggleVisible");
+        document.getElementById("linesAiYes").classList.toggle("toggleVisible");
 
         showLines = !showLines
     })   
 }
 
-var toggleLines = document.getElementById("toggleIncLean");
-if(toggleLines.addEventListener) {
-    toggleLines.addEventListener("click", function() {
+var toggleIncLean = document.getElementById("toggleIncLean");
+if(toggleIncLean.addEventListener) {
+    toggleIncLean.addEventListener("click", function() {
 
         document.getElementById("IncLeanNo").classList.toggle("toggleVisible");
         document.getElementById("IncLeanYes").classList.toggle("toggleVisible");

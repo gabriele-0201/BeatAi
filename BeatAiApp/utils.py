@@ -24,8 +24,8 @@ def setIdClient():
 
     files = os.listdir(config_list_path)
 
-    ids = [n[:(len(n) - 4)] for n in files]
-
+    ids = [int(n[:(len(n) - 4)]) for n in files]
+    
     ids.sort()
 
     idClient = 1 if len(ids) == 0 else (int(ids[-1]) + 1)
@@ -44,8 +44,8 @@ def setConfig(pop, findPath, idClient):
     
     if findPath:
         #To be updated with thw raws and columns variables
-        matrixNumber = (15 * 30) + 10
-        data = data.replace('INPUTS_TO_BE_SET', str(matrixNumber))
+        #matrixNumber = (15 * 30) + 10
+        data = data.replace('INPUTS_TO_BE_SET', "10")
     else:
         data = data.replace('INPUTS_TO_BE_SET', "12")
    

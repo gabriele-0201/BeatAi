@@ -75,17 +75,17 @@ def eval_genomes(genomes, config):
 
     map = client.map
     lenghtMap = client.lenghtMap
-    elementsInMap = 15 * 30
+    #elementsInMap = 15 * 30
     
-    lenghtArray = []
+    #lenghtArray = []
     
-    for i in range(15):
-        for j in range(30):
-            lenghtArray.append(lenghtMap[i][j])
+    #for i in range(15):
+    #    for j in range(30):
+    #        lenghtArray.append(lenghtMap[i][j])
 
     #append also 10 more elements for other inputs
-    for i in range(10):
-        lenghtArray.append(0)
+    #for i in range(10):
+    #    lenghtArray.append(0)
 
     walls = createWallArray(map)
 
@@ -145,17 +145,18 @@ def eval_genomes(genomes, config):
             if not client.pathFind:
                 outputArray = nets[i].activate((players[i].lines.upLine, players[i].lines.downLine, players[i].lines.leftLine, players[i].lines.rightLine, players[i].lines.upRightLine, players[i].lines.upLeftLine, players[i].lines.downRightLine, players[i].lines.downLeftLine, players[i].x, players[i].y, client.endX, client.endY))
             else:
-                lenghtArray[elementsInMap + 0] = players[i].lines.upLine
-                lenghtArray[elementsInMap + 1] = players[i].lines.downLine
-                lenghtArray[elementsInMap + 2] = players[i].lines.leftLine
-                lenghtArray[elementsInMap + 3] = players[i].lines.rightLine
-                lenghtArray[elementsInMap + 4] = players[i].lines.upRightLine
-                lenghtArray[elementsInMap + 5] = players[i].lines.upLeftLine
-                lenghtArray[elementsInMap + 6] = players[i].lines.downRightLine
-                lenghtArray[elementsInMap + 7] = players[i].lines.downLeftLine
-                lenghtArray[elementsInMap + 8] = players[i].x
-                lenghtArray[elementsInMap + 9] = players[i].y
-                outputArray = nets[i].activate(lenghtArray)
+                outputArray = nets[i].activate((players[i].lines.upLine, players[i].lines.downLine, players[i].lines.leftLine, players[i].lines.rightLine, players[i].lines.upRightLine, players[i].lines.upLeftLine, players[i].lines.downRightLine, players[i].lines.downLeftLine, players[i].x, players[i].y))
+            #    lenghtArray[elementsInMap + 0] = players[i].lines.upLine
+            #    lenghtArray[elementsInMap + 1] = players[i].lines.downLine
+            #    lenghtArray[elementsInMap + 2] = players[i].lines.leftLine
+            #    lenghtArray[elementsInMap + 3] = players[i].lines.rightLine
+            #    lenghtArray[elementsInMap + 4] = players[i].lines.upRightLine
+            #    lenghtArray[elementsInMap + 5] = players[i].lines.upLeftLine
+            #    lenghtArray[elementsInMap + 6] = players[i].lines.downRightLine
+            #    lenghtArray[elementsInMap + 7] = players[i].lines.downLeftLine
+            #    lenghtArray[elementsInMap + 8] = players[i].x
+            #    lenghtArray[elementsInMap + 9] = players[i].y
+            #    outputArray = nets[i].activate(lenghtArray)
             
             output = []
 
@@ -234,13 +235,14 @@ def eval_genomes(genomes, config):
 
                     if nowDistance < players[i].distance:
                         players[i].distance = nowDistance
-                        genome.fitness += 5
+                        genome.fitness += 30
                     elif nowDistance > players[i].distance:
-                        genome.fitness -= 20
+                        genome.fitness -= 3
+                    else:
+                        genome.fitness -= 0.5
 
             else:
                 #add fitness to the player who is more near to the end
-                #if not client.pathFind:
                 nowDistance = getDistance(players[i], client.endX, client.endY)
             
                 if(math.ceil(nowDistance) < math.floor(client.minDistance)):
@@ -248,9 +250,8 @@ def eval_genomes(genomes, config):
                     client.minDistance = nowDistance
             
             #Remove fitness if the player is stall in a single place for too many time
-            #if (not client.pathFind and players[i].haveToDecrease(client.cicleToDecrease)):
-            if (players[i].haveToDecrease(client.cicleToDecrease)):
-                genome.fitness -= 2
+            if (not client.pathFind and players[i].haveToDecrease(client.cicleToDecrease)):
+                genome.fitness -= 5
 
             if(checkCollisionAIS(players[i], balls)):
                 genome.fitness -= 10
@@ -266,8 +267,8 @@ def eval_genomes(genomes, config):
 
             if(players[i].haveToRemove(client.cicleToRemove)):
                 
-                if not client.pathFind:
-                    genome.fitness -= 10
+                #if not client.pathFind:
+                genome.fitness -= 20
 
                 running = False
                 toRemove.append(i)
@@ -295,8 +296,6 @@ def eval_genomes(genomes, config):
     if stopped or winGen:
         client.finishedThread = True
         client.save(update_fields=['finishedThread'])
-
-    #client.save()
 
     print("Generazione pronta: " + str(int(client.generation_set.count() - 1)), flush = True)
 
