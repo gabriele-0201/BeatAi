@@ -13,7 +13,7 @@ from .wall import Wall
 from .ball import Ball
 from .lines import Lines
 
-from BeatAiApp.dijkstraModule import dijkstra
+from .dijkstraModule import dijkstra
 
 import threading
 import os
@@ -239,7 +239,7 @@ def run(config_file, idClient):
     #p.add_reporter(stats)
     #p.add_reporter(neat.Checkpointer(5))
 
-    winner = p.run(eval_genomes, None)
+    winner = p.run(eval_genomes, 500)
 
     print('\nBest genome:\n{!s}'.format(winner))
 
