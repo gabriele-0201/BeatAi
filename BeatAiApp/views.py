@@ -49,7 +49,8 @@ def startAiPlay(request):
 
         # add this variable to the js 
         #pathFind = True if request.POST.get("incremental") == 'true' else False
-        pathFind = True
+        #Remove Path Finding for now in production, there is some bug with the algorithm
+        pathFind = False
 
         rows = int(request.POST.get("rows"))
         columns = int(request.POST.get("columns"))
@@ -75,8 +76,17 @@ def startAiPlay(request):
             height = height,
             width = width,
             map = map,
-            lenghtMap = lenghtMap
         )
+       
+        if pathFind:
+            lenghtMap = bfsDijkstra(map)
+        
+            for i in range(15):
+                for j in range(30):
+                    print(str(lenghtMap[i][j]) + " ", end = '')
+                print("\n")
+            
+            client.lenghtMap = lenghtMap
 
         setConfig(population, pathFind, idClient)
 
