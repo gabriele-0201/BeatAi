@@ -13,7 +13,7 @@ from .wall import Wall
 from .ball import Ball
 from .lines import Lines
 
-from BeatAiApp.dijkstraModule import dijkstra
+from BeatAiApp.bfsDijkstraModule import bfsDijkstra
 
 import threading
 import os
@@ -57,7 +57,7 @@ def startAiPlay(request):
         height = rows * sideSquare
         population = int(request.POST.get("population"))
 
-        lenghtMap = dijkstra(map)
+        lenghtMap = bfsDijkstra(map)
         
         for i in range(15):
             for j in range(30):
