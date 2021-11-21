@@ -1,5 +1,5 @@
 //To make it change in like a form
-var population = 30
+var population = 100
 var genToLoad = 0
 var genToShow = 0
 var changeGeneration = 0
@@ -7,6 +7,7 @@ var genOutputs = []
 var genLoading = -1
 var movement = 0
 var playersToSkip = []
+var popMax = 500
 
 var showLines = false;
 var incLean = true;
@@ -69,8 +70,8 @@ if(morePopBtn.addEventListener) {
     morePopBtn.addEventListener("click", function() {
         population += 5
         
-        if (population > 200)
-            population = 200
+        if (population > popMax)
+            population = popMax
         
         popNumber.textContent = population
 

@@ -179,31 +179,23 @@ def eval_genomes(genomes, config):
             #lower the fitness and remove the player who collide with the balls or other objects
             #to remove properly the objects I have to sort the indexes before use the array to remove them
 
-            #NOT WORK
-            #maybe it will not work, I have to pass the lenghtMap to the input of the neat
-
-            #Create a method to manage the fitnessfunction knowing the dijkstra map
-            
             if(client.pathFind):
                 nCol = math.floor((players[i].x + (players[i].sideSquare / 2)) / players[i].sideSquare)
                 nRow = math.floor((players[i].y + (players[i].sideSquare / 2)) / players[i].sideSquare)
 
-                #How can I memorize the old position?
                 if(players[i].distance == -1):
                     players[i].distance = lenghtMap[nRow][nCol]
                 else:
                     nowDistance = lenghtMap[nRow][nCol]
                     
-                    #print("Distance Player: " +str(players[i].distance))
-                    #print("Distance Now: " +str(nowDistance))
-
                     if nowDistance < players[i].distance:
                         players[i].distance = nowDistance
-                        genome.fitness += 30
-                    elif nowDistance > players[i].distance:
-                        genome.fitness -= 3
-                    else:
-                        genome.fitness -= 0.5
+                        genome.fitness += 1
+                    #elif nowDistance > players[i].distance:
+                    #    #print("BAD")
+                    #    genome.fitness -= 30
+                    #else:
+                    #    genome.fitness -= 0.2
 
             else:
                 #add fitness to the player who is more near to the end
@@ -231,8 +223,8 @@ def eval_genomes(genomes, config):
 
             if(players[i].haveToRemove(client.cicleToRemove)):
                 
-                #if not client.pathFind:
-                genome.fitness -= 20
+                if not client.pathFind:
+                    genome.fitness -= 20
 
                 running = False
                 toRemove.append(i)
