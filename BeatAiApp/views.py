@@ -64,7 +64,6 @@ def startAiPlay(request):
             print("\n")
 
         lenghtMap = bfsDijkstra(map)
-        print("bfs done")
         
         for i in range(15):
             for j in range(30):
