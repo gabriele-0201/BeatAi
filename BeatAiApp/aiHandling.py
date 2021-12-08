@@ -63,6 +63,9 @@ def jsonToBalls(strBalls, width, height):
 
 #AI MAIN FUNCTION
 def eval_genomes(genomes, config):
+
+    print("starting new generation")
+
     idClient = config.config_information
 
     #("ID CLIENT: " + str(idClient), flush = True)
@@ -75,17 +78,6 @@ def eval_genomes(genomes, config):
 
     map = client.map
     lenghtMap = client.lenghtMap
-    #elementsInMap = 15 * 30
-    
-    #lenghtArray = []
-    
-    #for i in range(15):
-    #    for j in range(30):
-    #        lenghtArray.append(lenghtMap[i][j])
-
-    #append also 10 more elements for other inputs
-    #for i in range(10):
-    #    lenghtArray.append(0)
 
     walls = createWallArray(map)
 
@@ -146,17 +138,6 @@ def eval_genomes(genomes, config):
                 outputArray = nets[i].activate((players[i].lines.upLine, players[i].lines.downLine, players[i].lines.leftLine, players[i].lines.rightLine, players[i].lines.upRightLine, players[i].lines.upLeftLine, players[i].lines.downRightLine, players[i].lines.downLeftLine, players[i].x, players[i].y, client.endX, client.endY))
             else:
                 outputArray = nets[i].activate((players[i].lines.upLine, players[i].lines.downLine, players[i].lines.leftLine, players[i].lines.rightLine, players[i].lines.upRightLine, players[i].lines.upLeftLine, players[i].lines.downRightLine, players[i].lines.downLeftLine, players[i].x, players[i].y))
-            #    lenghtArray[elementsInMap + 0] = players[i].lines.upLine
-            #    lenghtArray[elementsInMap + 1] = players[i].lines.downLine
-            #    lenghtArray[elementsInMap + 2] = players[i].lines.leftLine
-            #    lenghtArray[elementsInMap + 3] = players[i].lines.rightLine
-            #    lenghtArray[elementsInMap + 4] = players[i].lines.upRightLine
-            #    lenghtArray[elementsInMap + 5] = players[i].lines.upLeftLine
-            #    lenghtArray[elementsInMap + 6] = players[i].lines.downRightLine
-            #    lenghtArray[elementsInMap + 7] = players[i].lines.downLeftLine
-            #    lenghtArray[elementsInMap + 8] = players[i].x
-            #    lenghtArray[elementsInMap + 9] = players[i].y
-            #    outputArray = nets[i].activate(lenghtArray)
             
             output = []
 
@@ -175,23 +156,6 @@ def eval_genomes(genomes, config):
                 output.append('')
 
             genOut[i].append(output)
-
-            #Now I have to remove fitness If the output make a move to a lenght of zero
-            #for i, genome in enumerate(ge):
-            
-            '''
-            if(players[i].lines.upLine == 0 and generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][0] == 'up'):
-                genome.fitness -= 3
-
-            if(players[i].lines.downLine == 0 and generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][0] == 'down'):
-                genome.fitness -= 3
-
-            if(players[i].lines.rightLine == 0 and generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][1] == 'right'):
-                genome.fitness -= 3
-
-            if(players[i].lines.leftLine == 0 and generationOutputs[gen][i][len(generationOutputs[gen][i]) - 1][1] == 'left'):
-                genome.fitness -= 3
-            '''
 
             if(genOut[i][len(genOut[i]) - 1][0] == 'up'): # little bit sketchy
                 genOut[i][len(genOut[i]) - 1][0] = players[i].moveUp(walls)
@@ -215,31 +179,23 @@ def eval_genomes(genomes, config):
             #lower the fitness and remove the player who collide with the balls or other objects
             #to remove properly the objects I have to sort the indexes before use the array to remove them
 
-            #NOT WORK
-            #maybe it will not work, I have to pass the lenghtMap to the input of the neat
-
-            #Create a method to manage the fitnessfunction knowing the dijkstra map
-            
             if(client.pathFind):
                 nCol = math.floor((players[i].x + (players[i].sideSquare / 2)) / players[i].sideSquare)
                 nRow = math.floor((players[i].y + (players[i].sideSquare / 2)) / players[i].sideSquare)
 
-                #How can I memorize the old position?
                 if(players[i].distance == -1):
                     players[i].distance = lenghtMap[nRow][nCol]
                 else:
                     nowDistance = lenghtMap[nRow][nCol]
                     
-                    #print("Distance Player: " +str(players[i].distance))
-                    #print("Distance Now: " +str(nowDistance))
-
                     if nowDistance < players[i].distance:
                         players[i].distance = nowDistance
-                        genome.fitness += 30
-                    elif nowDistance > players[i].distance:
-                        genome.fitness -= 3
-                    else:
-                        genome.fitness -= 0.5
+                        genome.fitness += 1
+                    #elif nowDistance > players[i].distance:
+                    #    #print("BAD")
+                    #    genome.fitness -= 30
+                    #else:
+                    #    genome.fitness -= 0.2
 
             else:
                 #add fitness to the player who is more near to the end
@@ -267,8 +223,8 @@ def eval_genomes(genomes, config):
 
             if(players[i].haveToRemove(client.cicleToRemove)):
                 
-                #if not client.pathFind:
-                genome.fitness -= 20
+                if not client.pathFind:
+                    genome.fitness -= 20
 
                 running = False
                 toRemove.append(i)
