@@ -59,11 +59,6 @@ def startAiPlay(request):
         population = int(request.POST.get("population"))
 
         lenghtMap = bfsDijkstra(map)
-        
-        for i in range(15):
-            for j in range(30):
-                print(str(lenghtMap[i][j]) + " ", end = '')
-            print("\n")
 
         #create a db object
         client = Client(
@@ -119,6 +114,7 @@ def startAiPlay(request):
         client.save()
 
         # Determine path to configuration file. This path manipulation is
+ 
         # here so that the script will run successfully regardless of the
         # current working directory.
         config_path = os.path.join(os.path.dirname(__file__), 'neatConfigs/clients/' + str(idClient) + '.txt')
@@ -181,7 +177,7 @@ def stopAiPlay(request):
         #Theorically I don't need anymore global variables so I don't have to reset it
         #resetVaribleServer()
 
-        print("Stoppped Thread")
+        #print("Stoppped Thread")
 
         return JsonResponse({"value": "Stopped Ai Play"}, status = 200)
     else:
