@@ -15,6 +15,7 @@ from .lines import Lines
 
 from BeatAiApp.bfsDijkstraModule import bfsDijkstra
 
+
 import threading
 import os
 import neat
@@ -49,7 +50,7 @@ def startAiPlay(request):
 
         # add this variable to the js 
         #pathFind = True if request.POST.get("incremental") == 'true' else False
-        #Remove Path Finding for now in production, there is some bug with the algorithm
+
         pathFind = True
 
         rows = int(request.POST.get("rows"))
@@ -71,7 +72,7 @@ def startAiPlay(request):
             height = height,
             width = width,
             map = map,
-            lenghtMap = lenghtMap,
+            lenghtMap = lenghtMap
         )
 
         setConfig(population, pathFind, idClient)
